@@ -1,0 +1,44 @@
+{
+  "name": "ChatService",
+  "version": "0.1.0",
+  "description": "Chat REST API for PR-OJEK - Tugas Besar 3 WBD 2017",
+  "main": "server.js",
+  "scripts": {
+    "lint": "semistandard",
+    "test": "NODE_ENV=test mocha \"app/**/*.spec.js\"",
+    "docs": "rimraf docs && jsdoc -c jsdoc.conf",
+    "migrate": "knex migrate:latest",
+    "rollback": "knex migrate:rollback",
+    "seed": "knex seed:run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+http://gitlab.informatika.org/IF3110-2017-K01-Silmarillion/TugasBesar3_2017.git"
+  },
+  "author": "Silmarillion",
+  "license": "MIT",
+  "bugs": {
+    "url": "http://gitlab.informatika.org/IF3110-2017-K01-Silmarillion/TugasBesar3_2017/issues"
+  },
+  "homepage": "http://gitlab.informatika.org/IF3110-2017-K01-Silmarillion/TugasBesar3_2017#readme",
+  "dependencies": {
+    "api-error-handler": "^1.0.0",
+    "body-parser": "^1.17.2",
+    "config": "^1.26.1",
+    "express": "^4.15.3",
+    "fs-readdir-recursive": "^1.0.0",
+    "http-errors": "^1.6.1",
+    "lodash": "^4.17.4",
+    "method-override": "^2.3.9",
+    "mongoose": "^4.11.13",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "semistandard": "^11.0.0"
+  },
+  "semistandard": {
+    "env": {
+      "node": true
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "port": "LEARNGUAGE_PORT",
+
+  "mongoose": {
+    "connectionString": "LEARNGUAGE_MONGODB_CONNECTION_STRING"
+  },
+
+  "routePrefix": "LEARNGUAGE_ROUTE_PREFIX"
+}

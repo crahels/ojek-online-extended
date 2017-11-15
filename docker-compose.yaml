@@ -2,6 +2,26 @@ version: '2.1'
 
 services:
 
+  node_chatservice:
+    build:
+      context: ./ChatService/
+    ports:
+      - "8003:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./ChatService:/opt/ChatService
+      - /opt/ChatService/node_modules
+    depends_on:
+      - mongodb_chatservice
+
+  mongodb_chatservice:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_storage:/data/db
+
   glassfish_webapp:
     image: oracle/glassfish:5.0
     environment:
@@ -81,4 +101,6 @@ volumes:
   mysql_identityservice_data:
     driver: local
   mysql_webservice_data:
+    driver: local
+  mongodb_storage:
     driver: local
