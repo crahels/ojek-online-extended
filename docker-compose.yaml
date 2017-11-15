@@ -1,0 +1,84 @@
+version: '2.1'
+
+services:
+
+  glassfish_webapp:
+    image: oracle/glassfish:5.0
+    environment:
+      - ADMIN_PASSWORD=[glassfish_admin_password]
+      - IDENTITY_SERVICE_URL=http://glassfish_identityservice:8080
+      - WEB_SERVICE_URL=http://glassfish_webservice:8080
+    ports:
+      - 8000:8080
+      - 48480:4848
+    volumes:
+      - ./WebApp/out/docker:/WebApp
+
+  glassfish_identityservice:
+    image: oracle/glassfish:5.0
+    environment:
+      - ADMIN_PASSWORD=[glassfish_admin_password]
+      - DB_HOST=mysql_identityservice
+      - DB_USER=wbd2_identityservice
+      - DB_PASSWORD=[mysql_password]
+    ports:
+      - 8001:8080
+      - 48481:4848
+    volumes:
+      - ./IdentityService/out/docker:/IdentityService
+
+  glassfish_webservice:
+    image: oracle/glassfish:5.0
+    environment:
+      - ADMIN_PASSWORD=[glassfish_admin_password]
+      - DB_HOST=mysql_webservice
+      - DB_USER=wbd2_webservice
+      - DB_PASSWORD=[mysql_password]
+      - IDENTITY_SERVICE_URL=http://glassfish_identityservice:8080
+    ports:
+      - 8002:8080
+      - 48482:4848
+    volumes:
+      - ./WebService/out/docker:/WebService
+
+  mysql_identityservice:
+    image: mysql
+    volumes:
+      - mysql_identityservice_data:/var/lib/mysql
+      - ./IdentityService/wbd2_identityservice.sql:/docker-entrypoint-initdb.d/wbd2_identityservice.sql:ro
+    environment:
+      - MYSQL_ROOT_PASSWORD=[mysql_root_password]
+      - MYSQL_DATABASE=wbd2_identityservice
+      - MYSQL_USER=wbd2_identityservice
+      - MYSQL_PASSWORD=[mysql_password]
+
+  mysql_webservice:
+    image: mysql
+    volumes:
+      - mysql_webservice_data:/var/lib/mysql
+      - ./WebService/wbd2_webservice.sql:/docker-entrypoint-initdb.d/wbd2_webservice.sql:ro
+    environment:
+      - MYSQL_ROOT_PASSWORD=[mysql_root_password]
+      - MYSQL_DATABASE=wbd2_webservice
+      - MYSQL_USER=wbd2_webservice
+      - MYSQL_PASSWORD=[mysql_password]
+
+  phpmyadmin_identityservice:
+    image: phpmyadmin/phpmyadmin
+    environment:
+     - PMA_HOST=mysql_identityservice
+    ports:
+     - 12341:80
+
+  phpmyadmin_webservice:
+    image: phpmyadmin/phpmyadmin
+    environment:
+     - PMA_HOST=mysql_webservice
+    ports:
+     - 12342:80
+
+volumes:
+  mysql_identityservice_data:
+    driver: local
+  mysql_webservice_data:
+    driver: local

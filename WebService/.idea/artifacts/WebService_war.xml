@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="WebService:war">
+    <output-path>$PROJECT_DIR$/out/artifacts/WebService_war</output-path>
+    <root id="archive" name="WebService_war.war">
+      <element id="artifact" artifact-name="WebService:war exploded" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="mysql-connector-java-5.1.44-bin" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

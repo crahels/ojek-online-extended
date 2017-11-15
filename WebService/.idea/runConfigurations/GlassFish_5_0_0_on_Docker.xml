@@ -1,0 +1,57 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GlassFish 5.0.0 on Docker" type="GlassfishConfiguration" factoryName="Remote" APPLICATION_SERVER_NAME="GlassFish 5.0.0" ALTERNATIVE_JRE_ENABLED="false">
+    <option name="PORT" value="8002" />
+    <option name="LOCAL" value="false" />
+    <option name="OPEN_IN_BROWSER" value="false" />
+    <option name="UPDATING_POLICY" value="hot-swap-classes" />
+    <deployment>
+      <artifact name="WebService:war">
+        <settings>
+          <option name="defaultContextRoot" value="false" />
+        </settings>
+      </artifact>
+    </deployment>
+    <server-settings>
+      <data>
+        <option name="adminPort" value="48482" />
+        <option name="adminServerHost" value="" />
+        <option name="clusterName" value="" />
+        <option name="password" value="[glassfish_admin_password]" />
+        <option name="secured" value="true" />
+        <option name="stagingRemotePath" value="/WebService" />
+        <option name="transportHostId" value="988edf5c-7eec-4d7a-9f7c-0bf1c2452382" />
+        <option name="transportStagingTarget">
+          <TransportTarget>
+            <option name="id" value="761348b8-067b-4347-a992-b7b18b781211" />
+            <id>761348b8-067b-4347-a992-b7b18b781211</id>
+          </TransportTarget>
+        </option>
+        <option name="uploadWithGlassfish" value="false" />
+        <password>[glassfish_admin_password]</password>
+        <admin-port>48482</admin-port>
+        <upload-with-glassfish>false</upload-with-glassfish>
+        <secured>true</secured>
+        <admin-server-host />
+        <cluster-name />
+        <transport-target>
+          <TransportTarget>
+            <option name="id" value="761348b8-067b-4347-a992-b7b18b781211" />
+            <id>761348b8-067b-4347-a992-b7b18b781211</id>
+          </TransportTarget>
+        </transport-target>
+        <staging-path>/WebService</staging-path>
+        <host-id>988edf5c-7eec-4d7a-9f7c-0bf1c2452382</host-id>
+      </data>
+    </server-settings>
+    <predefined_log_file id="GlassFish" enabled="true" />
+    <RunnerSettings RunnerId="Debug">
+      <option name="DEBUG_PORT" value="40905" />
+      <option name="LOCAL" value="false" />
+    </RunnerSettings>
+    <method>
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="WebService:war" />
+      </option>
+    </method>
+  </configuration>
+</component>
