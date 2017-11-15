@@ -1,9 +1,9 @@
 {
-  "port": "LEARNGUAGE_PORT",
+  "port": "CHAT_SERVICE_PORT",
 
   "mongoose": {
-    "connectionString": "LEARNGUAGE_MONGODB_CONNECTION_STRING"
+    "connectionString": "CHAT_SERVICE_MONGODB_CONNECTION_STRING"
   },
 
-  "routePrefix": "LEARNGUAGE_ROUTE_PREFIX"
+  "routePrefix": "CHAT_SERVICE_ROUTE_PREFIX"
 }

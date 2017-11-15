@@ -9,6 +9,7 @@ services:
       - "8003:3000"
     environment:
       - NODE_ENV=production
+      - CHAT_SERVICE_MONGODB_CONNECTION_STRING=mongodb://mongodb_chatservice/chatservice
     volumes:
       - ./ChatService:/opt/ChatService
       - /opt/ChatService/node_modules
