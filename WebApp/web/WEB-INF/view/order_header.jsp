@@ -21,7 +21,8 @@
 	  <% if(currentSubPage.equals("chat_driver")) { %>
 		  backgroundyellow
 	  <% } %>
-	  "> <div class="circle left"> 3 </div>Chat Driver</div>
+	  "> <div class="circle left"> 3 </div>Chat the Driver</div>
+
 <div class="box
 	  <% if(currentSubPage.equals("complete_order")) { %>
 		  backgroundyellow

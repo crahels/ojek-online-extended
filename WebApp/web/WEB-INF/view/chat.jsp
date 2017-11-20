@@ -8,7 +8,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%! String currentPage = "order"; %>
-<%! String currentSubPage = "complete_order"; %>
+<%! String currentSubPage = "chat_driver"; %>
 <% User driver = (User) request.getAttribute("driver"); %>
 
 <html>
