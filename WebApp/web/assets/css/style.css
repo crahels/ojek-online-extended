@@ -386,12 +386,12 @@ h3 {
 
 .box {
     display: inline-block;
-    width: 25%;
+    width: 20%;
     height: 40px;
     padding: 5px;
-    margin-right: 32px;
+    margin-right: 5px;
     font-family: 'rokkitt-regular';
-    font-size: 19px;
+    font-size: 14px;
     color: #333333;
     border: 1px solid black;
 }

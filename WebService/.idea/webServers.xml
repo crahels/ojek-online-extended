@@ -2,7 +2,7 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="dfb47622-25d1-4892-b9ba-d2672961ed2b" name="docker-identityservice" url="http://localhost">
+      <webServer id="b6552c18-22e9-417d-827a-5c1733721939" name="docker-webservice" url="http://localhost">
         <fileTransfer port="0" mountedRoot="$PROJECT_DIR$/out/docker" accessType="MOUNT" />
       </webServer>
     </option>

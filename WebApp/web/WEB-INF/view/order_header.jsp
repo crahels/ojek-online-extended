@@ -11,15 +11,19 @@
 	  <% if(currentSubPage.equals("select_destination")) { %>
 		  backgroundyellow
 	  <% } %>
-	  "> <div class="circle left"> 1 </div>Select Destination</div>
+	  "> <div class="circle left"> 1 </div>Select a Destination</div>
 <div class="box
 	  <% if(currentSubPage.equals("select_driver")) { %>
 		  backgroundyellow
 	  <% } %>
 	  "> <div class="circle left"> 2 </div>Select a Driver</div>
 <div class="box
+	  <% if(currentSubPage.equals("chat_driver")) { %>
+		  backgroundyellow
+	  <% } %>
+	  "> <div class="circle left"> 3 </div>Chat Driver</div>
+<div class="box
 	  <% if(currentSubPage.equals("complete_order")) { %>
 		  backgroundyellow
 	  <% } %>
-	  "> <div class="circle left"> 3 </div>Complete your order</div>
-
+	  "> <div class="circle left"> 4 </div>Complete your Order</div>

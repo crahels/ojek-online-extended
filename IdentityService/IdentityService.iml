@@ -28,5 +28,6 @@
     <orderEntry type="library" name="mysql-connector-java-5.1.44-bin" level="project" />
     <orderEntry type="library" name="json-20140107" level="project" />
     <orderEntry type="library" name="mysql-connector-java-5.1.44-bin" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>

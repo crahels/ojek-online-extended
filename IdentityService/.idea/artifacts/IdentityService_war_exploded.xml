@@ -11,6 +11,7 @@
           <element id="library" level="project" name="mysql-connector-java-5.1.44-bin" />
           <element id="library" level="project" name="json-20140107" />
           <element id="library" level="project" name="JAX-WS-Glassfish / JAX-WS 2.2 RI / Metro 1.X / JWSDP 2.2" />
+          <element id="library" level="project" name="lib" />
         </element>
       </element>
     </root>

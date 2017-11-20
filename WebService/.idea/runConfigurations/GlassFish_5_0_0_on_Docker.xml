@@ -19,7 +19,7 @@
         <option name="password" value="[glassfish_admin_password]" />
         <option name="secured" value="true" />
         <option name="stagingRemotePath" value="/WebService" />
-        <option name="transportHostId" value="988edf5c-7eec-4d7a-9f7c-0bf1c2452382" />
+        <option name="transportHostId" value="b6552c18-22e9-417d-827a-5c1733721939" />
         <option name="transportStagingTarget">
           <TransportTarget>
             <option name="id" value="761348b8-067b-4347-a992-b7b18b781211" />
@@ -40,7 +40,7 @@
           </TransportTarget>
         </transport-target>
         <staging-path>/WebService</staging-path>
-        <host-id>988edf5c-7eec-4d7a-9f7c-0bf1c2452382</host-id>
+        <host-id>b6552c18-22e9-417d-827a-5c1733721939</host-id>
       </data>
     </server-settings>
     <predefined_log_file id="GlassFish" enabled="true" />
