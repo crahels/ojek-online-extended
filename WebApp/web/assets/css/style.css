@@ -166,6 +166,54 @@
     width: 570px;
 }
 
+.containerchat {
+    width: 100%;
+    height: 300px;
+    margin-top: 10px;
+    border: 1px solid black;
+    overflow-y: auto;
+}
+
+.containerinput {
+    margin-top: -1px;
+    width: 100%;
+    height: 50px;
+    border: 1px solid black;
+}
+
+.chatsender {
+    width: 250px;
+    height: auto;
+    margin-left: 20px;
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 7px;
+    background: red;
+}
+
+.inpconv {
+    margin-top: 10px;
+    margin-left: 20px;
+    background: #FFFFFF;
+    border: none;
+    height: 30px;
+    float: left;
+    position: relative;
+}
+
+.send {
+    margin-top: 10px;
+    margin-right: 20px;
+    background: green;
+    border: 1px solid black;
+    border-radius: 7px;
+    height: 30px;
+    width: 100px;
+    float: right;
+    position: relative;
+}
+
 h2 {
     font-weight: normal;
     font-family: 'bebas';
