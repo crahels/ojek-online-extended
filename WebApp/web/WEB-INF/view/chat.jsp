@@ -36,8 +36,15 @@
     <div class="container">
         <%@ include file="order_header.jsp" %>
         <div ng-app="chatApp" ng-controller="chatShow">
-            <div class="containerchat">
-                <div class="chatsender" ng-repeat="x in chathistory">{{x}}</div>
+            <div id="containerchat">
+                <div class="chat" ng-repeat="(key,value) in chathistory">
+                    <div ng-if="key % 2 == 0">
+                        <div ng-init="goToBottom('containerchat')" class="chatsender">{{value[key]}}</div>
+                    </div>
+                    <div ng-if="key % 2 == 1">
+                        <div ng-init="goToBottom('containerchat')" class="chatreceiver">{{value[key]}}</div>
+                    </div>
+                </div>
             </div>
             <div class="containerinput">
                 <input class="inpconv" type="text" ng-model="conv" placeholder="Enter your message">
@@ -46,16 +53,26 @@
         </div>
     </div>
     <script>
+        var key = 0;
         var app = angular.module('chatApp', []);
+
         app.controller('chatShow', function($scope) {
             $scope.chathistory = [];
             $scope.send = function() {
                 if ($scope.conv != null && $scope.conv != "") {
-                    $scope.chathistory.push($scope.conv);
+                    var parts = {};
+                    parts[key] = $scope.conv;
+                    key++;
+
+                    $scope.chathistory.push(parts);
                     $scope.conv = "";
                 } else {
                     alert('Input cannot be blank.');
                 }
+            }
+            $scope.goToBottom = function(id) {
+                var scroller = document.getElementById(id);
+                scroller.scrollTop = scroller.scrollHeight;
             }
         });
     </script>

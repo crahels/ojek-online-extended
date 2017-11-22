@@ -166,12 +166,13 @@
     width: 570px;
 }
 
-.containerchat {
+#containerchat {
     width: 100%;
     height: 300px;
     margin-top: 10px;
     border: 1px solid black;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .containerinput {
@@ -182,14 +183,34 @@
 }
 
 .chatsender {
-    width: 250px;
-    height: auto;
-    margin-left: 20px;
-    margin-top: 20px;
+    white-space: initial; 
+    width: 250px; 
+    margin-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     padding: 10px;
     border: 1px solid black;
     border-radius: 7px;
-    background: red;
+    background: #7EA9FC;
+    float: right;
+}
+
+.chatreceiver {
+    white-space: initial; 
+    width: 250px;  
+    margin-left: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 7px;
+    background: #EBEBEB;
+}
+
+.chat {
+    white-space: initial; 
+    width: 100%;
+    display: inline-block;
 }
 
 .inpconv {
@@ -198,6 +219,7 @@
     background: #FFFFFF;
     border: none;
     height: 30px;
+    width: 70%;
     float: left;
     position: relative;
 }
@@ -209,9 +231,10 @@
     border: 1px solid black;
     border-radius: 7px;
     height: 30px;
-    width: 100px;
+    width: 20%;
     float: right;
     position: relative;
+    color: black;
 }
 
 h2 {
