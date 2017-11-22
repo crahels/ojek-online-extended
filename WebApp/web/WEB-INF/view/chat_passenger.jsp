@@ -8,7 +8,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%! String currentPage = "order"; %>
-<%! String currentSubPage = "chat_driver"; %>
+<%! String currentSubPage = "chat_passenger"; %>
 <% User driver = (User) request.getAttribute("driver"); %>
 <%--
     Data binding (ng-model directives)
@@ -48,8 +48,9 @@
             </div>
             <div class="containerinput">
                 <input class="inpconv" type="text" ng-model="conv" placeholder="Enter your message">
-                <button class="send" ng-click="send()">Kirim</button>
+                <button class="sendbutton" ng-click="send()">Kirim</button>
             </div>
+            <button class="closebutton">CLOSE</button>
         </div>
     </div>
     <script>

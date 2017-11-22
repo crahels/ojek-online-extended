@@ -18,7 +18,7 @@
 	  <% } %>
 	  "> <div class="circle left"> 2 </div>Select a Driver</div>
 <div class="box
-	  <% if(currentSubPage.equals("chat_driver")) { %>
+	  <% if(currentSubPage.equals("chat_passenger")) { %>
 		  backgroundyellow
 	  <% } %>
 	  "> <div class="circle left"> 3 </div>Chat the Driver</div>

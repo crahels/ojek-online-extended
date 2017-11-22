@@ -8,15 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "ChatServlet", urlPatterns = {"/chat"})
-public class ChatServlet extends HttpServlet {
+@WebServlet(name = "ChatDriverServlet", urlPatterns = {"/chat_driver"})
+public class ChatDriverServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RequestDispatcher rs = request.getRequestDispatcher("/WEB-INF/view/chat.jsp");
+        RequestDispatcher rs = request.getRequestDispatcher("/WEB-INF/view/chat_driver.jsp");
         rs.forward(request, response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RequestDispatcher rs = request.getRequestDispatcher("/WEB-INF/view/chat.jsp");
+        RequestDispatcher rs = request.getRequestDispatcher("/WEB-INF/view/chat_driver.jsp");
         rs.forward(request, response);
     }
 }
