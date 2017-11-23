@@ -51,20 +51,23 @@
         importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
     </script>-->
     <script>
-        var key = 0;
         var app = angular.module('chatApp', []);
 
         app
         .controller('chatShow', function($scope, $http, $location, $anchorScroll, $timeout) {
             $scope.chathistory = [];
+
+            $scope.from = 'crahels';
+            $scope.to = 'rayandrew';
+            $scope.token = 'aaa';
+
             $scope.historypassenger = 'https://jrr-chat.herokuapp.com/history/crahels';
             $scope.historydriver = 'https://jrr-chat.herokuapp.com/history/rayandrew';
             $scope.savechat = 'https://jrr-chat.herokuapp.com/sendchat';
-            $scope.loadTime = 10000;
 
             $scope.send = function() {
                 if ($scope.conv != null && $scope.conv != "") {
-                    $http.post($scope.savechat, {from: 'crahels', to: 'rayandrew', message: $scope.conv, token: 'aaa'})
+                    $http.post($scope.savechat, {from: $scope.from, to: $scope.to, message: $scope.conv, token: $scope.token})
                     .then(function(response) {
                         console.log(response.data);
                         $scope.chathistory.push(response.data);
@@ -83,7 +86,7 @@
             };
 
             $scope.getHistory = function() {
-                $http.get($scope.historypassenger)
+                $http.get($scope.historypassenger, {myself: $scope.from, other: $scope.to, token: $scope.token})
                     .then(function(response) {
                         $scope.chathistory = response.data.data;
                         $http.get($scope.historydriver)
@@ -91,7 +94,6 @@
                                 res.data.data.map(function(val) {
                                     $scope.chathistory.push(val);
                                 });
-                                $scope.nextLoad();
                             }, function(res) {
                                 console.log("Unable to perform get request");
                             });
@@ -99,21 +101,6 @@
                         console.log("Unable to perform get request");
                     });
             };
-
-            $scope.cancelNextLoad = function() {
-                $timeout.cancel($scope.loadPromise);
-            };
-
-            $scope.nextLoad = function() {
-                $scope.cancelNextLoad();
-                $scope.loadPromise = $timeout($scope.getHistory(),$scope.loadTime);
-            }
-
-            $scope.$on('$destroy', function() {
-                $scope.cancelNextLoad();
-            });
-
-
         });
     </script>
     <!--<script type="text/javascript" src="../../assets/js/order_validation.js"></script>-->

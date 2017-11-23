@@ -44,10 +44,10 @@
             <div class="username-order"><span class="bold">{{usernamepassenger}}</span></div>
             <div id="containerchat">
                 <div class="chat" ng-repeat="conversation in chathistory | orderBy:'timestamp'">
-                    <div ng-if="conversation.from  === 'crahels'">
+                    <div ng-if="conversation.from  === from">
                         <div ng-init="goToBottom()" class="chatsender">{{conversation.message}}</div>
                     </div>
-                    <div ng-if="conversation.to === 'crahels'">
+                    <div ng-if="conversation.to === from">
                         <div ng-init="goToBottom()" class="chatreceiver">{{conversation.message}}</div>
                     </div>
                 </div>
@@ -65,7 +65,6 @@
     importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
 </script>-->
 <script>
-    var key = 0;
     var app = angular.module('chatApp', []);
 
     app.controller('chatShow', function($scope, $location, $anchorScroll, $http, $timeout) {
@@ -163,7 +162,7 @@
 
         $scope.getHistory = function() {
             // harus diganti jadi post
-            $http.get($scope.historypassenger,{from: $scope.from, to: $scope.to, token: $scope.token})
+            $http.get($scope.historypassenger,{myself: $scope.from, other: $scope.to, token: $scope.token})
                 .then(function(response) {
                     $scope.chathistory = response.data.data;
                     $http.get($scope.historydriver)
