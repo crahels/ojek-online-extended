@@ -60,6 +60,10 @@
         </div>
     </div>
 </div>
+<!--<script>
+    importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js');
+    importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
+</script>-->
 <script>
     var key = 0;
     var app = angular.module('chatApp', []);
@@ -71,6 +75,10 @@
         $scope.findingorder = 0;
         $scope.cancelorder = 0;
         $scope.checkordersuccess = 0;
+
+        $scope.token = 'aaa';
+        $scope.from = 'crahels';
+        $scope.to = 'rayandrew';
 
         $scope.usernamepassenger = "";
         $scope.loadTime = 10000;
@@ -84,7 +92,7 @@
 
         $scope.send = function() {
             if ($scope.conv != null && $scope.conv != "") {
-                $http.post($scope.savechat, {from: 'crahels', to: 'rayandrew', message: $scope.conv, token: 'aaa'})
+                $http.post($scope.savechat, {from: $scope.from, to: $scope.to, message: $scope.conv, token: $scope.token})
                     .then(function(response) {
                         console.log(response.data);
                         $scope.chathistory.push(response.data);
@@ -101,8 +109,10 @@
             $location.hash('endofchat');
             $anchorScroll();
         }
+
         $scope.findOrder = function() {
-            $http.get($scope.findorderurl, {token: 'aaa', username: 'crahels'})
+            // harus diganti jadi post
+            $http.get($scope.findorderurl, {token: $scope.token, username: $scope.from})
                 .then(function(response) {
                     console.log(response.data);
                     $scope.findorder = 0;
@@ -113,10 +123,10 @@
         }
 
         $scope.cancelFindOrder = function() {
-            $http.get($scope.cancelfindorderurl, {token: 'aaa', username: 'crahels'})
+            // harus diganti jadi post
+            $http.get($scope.cancelfindorderurl, {token: $scope.token, username: $scope.from})
                 .then(function(response) {
                     console.log(response.data);
-                    /* jika check order belum berhasil menerima seorang pengguna */
                     if (!$scope.checkordersuccess) {
                         $scope.cancelorder = 1;
                         $scope.findingorder = 0;
@@ -128,19 +138,20 @@
         }
 
         $scope.checkOrder = function() {
-            $http.get($scope.checkorderurl, {token: 'aaa', username: 'crahels'})
+            // harus diganti jadi post dan di uncomment
+            $http.get($scope.checkorderurl, {token: $scope.token, username: $scope.from})
                 .then(function(response) {
                     console.log(response.data);
                     if (!$scope.cancelorder) {
-                        //if (response.data.orderedBy != null) {
+                        if (response.data.orderedBy != null) {
                             $scope.checkordersuccess = 1;
                             $scope.usernamepassenger = "udah ada";
-                            //$scope.usernamepassenger = response.data.orderedBy;
+                            $scope.usernamepassenger = response.data.orderedBy;
                             $scope.findingorder = 0;
                             $scope.gotorder = 1;
-                        //} else {
-                        //    $scope.nextLoad();
-                        //}
+                        } else {
+                            $scope.nextLoad();
+                        }
                     }
                 }, function(response) {
                     console.log("unable to perform get request");
@@ -151,7 +162,8 @@
         }
 
         $scope.getHistory = function() {
-            $http.get($scope.historypassenger)
+            // harus diganti jadi post
+            $http.get($scope.historypassenger,{from: $scope.from, to: $scope.to, token: $scope.token})
                 .then(function(response) {
                     $scope.chathistory = response.data.data;
                     $http.get($scope.historydriver)
@@ -161,11 +173,9 @@
                             });
                         }, function(res) {
                             console.log("Unable to perform get request");
-                            $scope.getHistory();
                         });
                 }, function(response) {
                     console.log("Unable to perform get request");
-                    $scope.getHistory();
                 });
         };
 
