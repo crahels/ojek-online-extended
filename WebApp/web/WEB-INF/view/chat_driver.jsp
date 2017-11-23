@@ -28,20 +28,27 @@
         <div ng-show="findorder">
             <button class="find-order-button" ng-click="findOrder()">FIND ORDER</button>
         </div>
-        <div ng-show="!findorder">
+
+        <div ng-show="findingorder">
+            <div ng-if="findingorder">
+                <div ng-init="checkOrder()"></div>
+            </div>
             <div class="finding-order"><span class="bold">Finding Order...</span></div>
-            <button class="cancel-order-button">CANCEL</button>
+            <button class="cancel-order-button" ng-click="cancelFindOrder()">CANCEL</button>
         </div>
-        <div ng-show="!findorder">
+        <div ng-show="gotorder">
+            <div ng-if="gotorder">
+                <div ng-init="getHistory()"></div>
+            </div>
             <div class="header-driver"><span class="bold">Got an Order!</span></div>
-            <div class="username-order"><span class="bold">ini harusnya username</span></div>
+            <div class="username-order"><span class="bold">{{usernamepassenger}}</span></div>
             <div id="containerchat">
-                <div class="chat" ng-repeat="(key,value) in chathistory">
-                    <div ng-if="key % 2 == 0">
-                        <div ng-init="goToBottom()" class="chatsender">{{value[key]}}</div>
+                <div class="chat" ng-repeat="conversation in chathistory | orderBy:'timestamp'">
+                    <div ng-if="conversation.from  === 'crahels'">
+                        <div ng-init="goToBottom()" class="chatsender">{{conversation.message}}</div>
                     </div>
-                    <div ng-if="key % 2 == 1">
-                        <div ng-init="goToBottom()" class="chatreceiver">{{value[key]}}</div>
+                    <div ng-if="conversation.to === 'crahels'">
+                        <div ng-init="goToBottom()" class="chatreceiver">{{conversation.message}}</div>
                     </div>
                 </div>
                 <div id="endofchat"></div>
@@ -57,23 +64,39 @@
     var key = 0;
     var app = angular.module('chatApp', []);
 
-    app.controller('chatShow', function($scope, $location, $anchorScroll) {
+    app.controller('chatShow', function($scope, $location, $anchorScroll, $http, $timeout) {
         $scope.chathistory = [];
         $scope.findorder = 1;
+        $scope.gotorder = 0;
+        $scope.findingorder = 0;
+        $scope.cancelorder = 0;
+        $scope.checkordersuccess = 0;
+
+        $scope.usernamepassenger = "";
+        $scope.loadTime = 10000;
+
         $scope.findorderurl = 'https://jrr-chat.herokuapp.com/history/rayandrew';
+        $scope.cancelfindorderurl = 'https://jrr-chat.herokuapp.com/history/rayandrew';
+        $scope.checkorderurl = 'https://jrr-chat.herokuapp.com/history/rayandrew';
+        $scope.historypassenger = 'https://jrr-chat.herokuapp.com/history/crahels';
+        $scope.historydriver = 'https://jrr-chat.herokuapp.com/history/rayandrew';
+        $scope.savechat = 'https://jrr-chat.herokuapp.com/sendchat';
 
         $scope.send = function() {
             if ($scope.conv != null && $scope.conv != "") {
-                var parts = {};
-                parts[key] = $scope.conv;
-                key++;
-
-                $scope.chathistory.push(parts);
-                $scope.conv = "";
+                $http.post($scope.savechat, {from: 'crahels', to: 'rayandrew', message: $scope.conv, token: 'aaa'})
+                    .then(function(response) {
+                        console.log(response.data);
+                        $scope.chathistory.push(response.data);
+                        $scope.conv = "";
+                    }, function(response) {
+                        console.log("unable to perform post request");
+                    });
             } else {
                 alert('Input cannot be blank.');
             }
-        }
+        };
+
         $scope.goToBottom = function() {
             $location.hash('endofchat');
             $anchorScroll();
@@ -83,10 +106,81 @@
                 .then(function(response) {
                     console.log(response.data);
                     $scope.findorder = 0;
+                    $scope.findingorder = 1;
                 }, function(response) {
-
+                    console.log("unable to perform get request");
                 });
         }
+
+        $scope.cancelFindOrder = function() {
+            $http.get($scope.cancelfindorderurl, {token: 'aaa', username: 'crahels'})
+                .then(function(response) {
+                    console.log(response.data);
+                    /* jika check order belum berhasil menerima seorang pengguna */
+                    if (!$scope.checkordersuccess) {
+                        $scope.cancelorder = 1;
+                        $scope.findingorder = 0;
+                        $scope.findorder = 1;
+                    }
+                }, function(response) {
+                    console.log("unable to perform get request");
+                });
+        }
+
+        $scope.checkOrder = function() {
+            $http.get($scope.checkorderurl, {token: 'aaa', username: 'crahels'})
+                .then(function(response) {
+                    console.log(response.data);
+                    if (!$scope.cancelorder) {
+                        //if (response.data.orderedBy != null) {
+                            $scope.checkordersuccess = 1;
+                            $scope.usernamepassenger = "udah ada";
+                            //$scope.usernamepassenger = response.data.orderedBy;
+                            $scope.findingorder = 0;
+                            $scope.gotorder = 1;
+                        //} else {
+                        //    $scope.nextLoad();
+                        //}
+                    }
+                }, function(response) {
+                    console.log("unable to perform get request");
+                    if (!$scope.cancelorder) {
+                        $scope.nextLoad();
+                    }
+                });
+        }
+
+        $scope.getHistory = function() {
+            $http.get($scope.historypassenger)
+                .then(function(response) {
+                    $scope.chathistory = response.data.data;
+                    $http.get($scope.historydriver)
+                        .then(function(res) {
+                            res.data.data.map(function(val) {
+                                $scope.chathistory.push(val);
+                            });
+                        }, function(res) {
+                            console.log("Unable to perform get request");
+                            $scope.getHistory();
+                        });
+                }, function(response) {
+                    console.log("Unable to perform get request");
+                    $scope.getHistory();
+                });
+        };
+
+        $scope.cancelNextLoad = function() {
+            $timeout.cancel($scope.loadPromise);
+        };
+
+        $scope.nextLoad = function() {
+            $scope.cancelNextLoad();
+            $scope.loadPromise = $timeout($scope.checkOrder(),$scope.loadTime);
+        }
+
+        $scope.$on('$destroy', function() {
+            $scope.cancelNextLoad();
+        });
     });
 </script>
 </body>

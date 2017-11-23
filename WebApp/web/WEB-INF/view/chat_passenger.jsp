@@ -64,16 +64,14 @@
 
             $scope.send = function() {
                 if ($scope.conv != null && $scope.conv != "") {
-
                     $http.post($scope.savechat, {from: 'crahels', to: 'rayandrew', message: $scope.conv, token: 'aaa'})
                     .then(function(response) {
                         console.log(response.data);
                         $scope.chathistory.push(response.data);
+                        $scope.conv = "";
                     }, function(response) {
                         console.log("unable to perform post request");
                     });
-
-                    $scope.conv = "";
                 } else {
                     alert('Input cannot be blank.');
                 }
@@ -92,8 +90,8 @@
                             .then(function(res) {
                                 res.data.data.map(function(val) {
                                     $scope.chathistory.push(val);
-                                    $scope.nextLoad();
                                 });
+                                $scope.nextLoad();
                             }, function(res) {
                                 console.log("Unable to perform get request");
                             });
@@ -108,7 +106,7 @@
 
             $scope.nextLoad = function() {
                 $scope.cancelNextLoad();
-                $scope.loadPromise = $timeout($scope.getHistory,$scope.loadTime);
+                $scope.loadPromise = $timeout($scope.getHistory(),$scope.loadTime);
             }
 
             $scope.$on('$destroy', function() {
