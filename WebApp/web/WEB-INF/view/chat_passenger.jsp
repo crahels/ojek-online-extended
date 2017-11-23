@@ -10,14 +10,6 @@
 <%! String currentPage = "order"; %>
 <%! String currentSubPage = "chat_passenger"; %>
 <% User driver = (User) request.getAttribute("driver"); %>
-<%--
-    Data binding (ng-model directives)
-    Controllers (ng-controllers)
-    ng-repeat, untuk menampilkan list
-    $http untuk AJAX request
-    $scope untuk komunikasi data antara controller dengan view.
-    ng-show dan ng-hide untuk menampilkan/menyembunyikan elemen
---%>
 
 <html>
 <head>
@@ -35,16 +27,17 @@
 <body>
     <div class="container">
         <%@ include file="order_header.jsp" %>
-        <div ng-app="chatApp" ng-controller="chatShow">
+        <div ng-app="chatApp" ng-init="getHistory()" ng-controller="chatShow">
             <div id="containerchat">
-                <div class="chat" ng-repeat="(key,value) in chathistory">
-                    <div ng-if="key % 2 == 0">
-                        <div ng-init="goToBottom('containerchat')" class="chatsender">{{value[key]}}</div>
+                <div class="chat" ng-repeat="conversation in chathistory | orderBy:'timestamp'">
+                    <div ng-if="conversation.from  === 'crahels'">
+                        <div ng-init="goToBottom()" class="chatsender">{{conversation.message}}</div>
                     </div>
-                    <div ng-if="key % 2 == 1">
-                        <div ng-init="goToBottom('containerchat')" class="chatreceiver">{{value[key]}}</div>
+                    <div ng-if="conversation.to === 'crahels'">
+                        <div ng-init="goToBottom()" class="chatreceiver">{{conversation.message}}</div>
                     </div>
                 </div>
+                <div id="endofchat"></div>
             </div>
             <div class="containerinput">
                 <input class="inpconv" type="text" ng-model="conv" placeholder="Enter your message">
@@ -53,28 +46,76 @@
             <button class="closebutton">CLOSE</button>
         </div>
     </div>
+    <!--<script>
+        importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js');
+        importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
+    </script>-->
     <script>
         var key = 0;
         var app = angular.module('chatApp', []);
 
-        app.controller('chatShow', function($scope) {
+        app
+        .controller('chatShow', function($scope, $http, $location, $anchorScroll, $timeout) {
             $scope.chathistory = [];
+            $scope.historypassenger = 'https://jrr-chat.herokuapp.com/history/crahels';
+            $scope.historydriver = 'https://jrr-chat.herokuapp.com/history/rayandrew';
+            $scope.savechat = 'https://jrr-chat.herokuapp.com/sendchat';
+            $scope.loadTime = 10000;
+
             $scope.send = function() {
                 if ($scope.conv != null && $scope.conv != "") {
-                    var parts = {};
-                    parts[key] = $scope.conv;
-                    key++;
 
-                    $scope.chathistory.push(parts);
+                    $http.post($scope.savechat, {from: 'crahels', to: 'rayandrew', message: $scope.conv, token: 'aaa'})
+                    .then(function(response) {
+                        console.log(response.data);
+                        $scope.chathistory.push(response.data);
+                    }, function(response) {
+                        console.log("unable to perform post request");
+                    });
+
                     $scope.conv = "";
                 } else {
                     alert('Input cannot be blank.');
                 }
+            };
+
+            $scope.goToBottom = function() {
+                $location.hash('endofchat');
+                $anchorScroll();
+            };
+
+            $scope.getHistory = function() {
+                $http.get($scope.historypassenger)
+                    .then(function(response) {
+                        $scope.chathistory = response.data.data;
+                        $http.get($scope.historydriver)
+                            .then(function(res) {
+                                res.data.data.map(function(val) {
+                                    $scope.chathistory.push(val);
+                                    $scope.nextLoad();
+                                });
+                            }, function(res) {
+                                console.log("Unable to perform get request");
+                            });
+                    }, function(response) {
+                        console.log("Unable to perform get request");
+                    });
+            };
+
+            $scope.cancelNextLoad = function() {
+                $timeout.cancel($scope.loadPromise);
+            };
+
+            $scope.nextLoad = function() {
+                $scope.cancelNextLoad();
+                $scope.loadPromise = $timeout($scope.getHistory,$scope.loadTime);
             }
-            $scope.goToBottom = function(id) {
-                var scroller = document.getElementById(id);
-                scroller.scrollTop = scroller.scrollHeight;
-            }
+
+            $scope.$on('$destroy', function() {
+                $scope.cancelNextLoad();
+            });
+
+
         });
     </script>
     <!--<script type="text/javascript" src="../../assets/js/order_validation.js"></script>-->

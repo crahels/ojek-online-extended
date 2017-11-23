@@ -38,12 +38,13 @@
             <div id="containerchat">
                 <div class="chat" ng-repeat="(key,value) in chathistory">
                     <div ng-if="key % 2 == 0">
-                        <div ng-init="goToBottom('containerchat')" class="chatsender">{{value[key]}}</div>
+                        <div ng-init="goToBottom()" class="chatsender">{{value[key]}}</div>
                     </div>
                     <div ng-if="key % 2 == 1">
-                        <div ng-init="goToBottom('containerchat')" class="chatreceiver">{{value[key]}}</div>
+                        <div ng-init="goToBottom()" class="chatreceiver">{{value[key]}}</div>
                     </div>
                 </div>
+                <div id="endofchat"></div>
             </div>
             <div class="containerinput">
                 <input class="inpconv" type="text" ng-model="conv" placeholder="Enter your message">
@@ -56,9 +57,11 @@
     var key = 0;
     var app = angular.module('chatApp', []);
 
-    app.controller('chatShow', function($scope) {
+    app.controller('chatShow', function($scope, $location, $anchorScroll) {
         $scope.chathistory = [];
         $scope.findorder = 1;
+        $scope.findorderurl = 'https://jrr-chat.herokuapp.com/history/rayandrew';
+
         $scope.send = function() {
             if ($scope.conv != null && $scope.conv != "") {
                 var parts = {};
@@ -71,12 +74,18 @@
                 alert('Input cannot be blank.');
             }
         }
-        $scope.goToBottom = function(id) {
-            var scroller = document.getElementById(id);
-            scroller.scrollTop = scroller.scrollHeight;
+        $scope.goToBottom = function() {
+            $location.hash('endofchat');
+            $anchorScroll();
         }
         $scope.findOrder = function() {
-            $scope.findorder = 0;
+            $http.get($scope.findorderurl, {token: 'aaa', username: 'crahels'})
+                .then(function(response) {
+                    console.log(response.data);
+                    $scope.findorder = 0;
+                }, function(response) {
+
+                });
         }
     });
 </script>
