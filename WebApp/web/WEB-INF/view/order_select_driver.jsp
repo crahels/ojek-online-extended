@@ -14,9 +14,6 @@
 <%! String currentSubPage = "select_driver"; %>
 <%--<% List<User> preferredDrivers = (List<User>) request.getAttribute("preferred_drivers"); %>
 <% List<User> otherDrivers = (List<User>) request.getAttribute("other_drivers"); %>--%>
-<% String picking_point = request.getParameter("picking_point"); %>
-<% String destination = request.getParameter("destination"); %>
-<% String preferred_driver = request.getParameter("preferred_driver"); %>
 
 <html>
 <head>
@@ -30,155 +27,126 @@
 <%@ include file="header.jsp" %>
 
 <body>
-    <div class="container dark-grey" ng-app = "selectDriverApp" ng-controller="showDrivers">
+    <div class="container dark-grey" ng-app="selectDriverApp" ng-controller="selectDriver">
         <%@ include file="order_header.jsp" %>
-        <div class="select-driver-border" ng-init="getPreferredDrivers()">
+        <div class="select-driver-border">
             <h1>Preferred Drivers:</h1>
-            <div ng-repeat = "driver in arrpreferreddriver">
-                <table class="table-select-driver">
-                    <tr>
-                        <td>
-                            <img class="img-driver-pic" ng-src="{{driver.profilepicture}}" alt="DRIVER PICTURE">
-                        </td>
-                        <td>
-                            <p class="driver-name">{{driver.name}}</p>
-                            <p class="star"><span class="orange">&#10025; {{driver.rating}} </span> ({{driver.votes}}
-                                <div ng-if="driver.votes > 1">
-                                    votes)
-                                </div>
-                                <div ng-if="driver.votes <= 1">
-                                    vote)
-                                </div>
-                            </p>
-                            <a href="complete_order?picking_point=<% out.print(picking_point); %>&destination=<% out.print(destination); %>&preferred_driver=<% out.print(preferred_driver); %>&driver_id= "> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
-                        </td>
-                    </tr>
-                </table>
-            <%  }
-            } else { %>
+            <div ng-if="countarrpreferred > 0">
+                <div ng-repeat="driver in arrPreferredDriver">
+                    <table class="table-select-driver">
+                        <tr>
+                            <td>
+                                <img class="img-driver-pic" ng-src="{{driver.profilepicture}}" alt="DRIVER PICTURE">
+                            </td>
+                            <td>
+                                <p class="driver-name"> {{driver.name}} </p>
+                                <p class="star"><span class="orange">&#10025; {{driver.ratings}} </span> ({{driver.votes}}
+                                    <div ng-if="driver.votes > 1">
+                                        votes)
+                                    </div>
+                                    <div ng-if="driver.votes <= 1">
+                                        vote)
+                                    </div>
+                                </p>
+                                <a ng-href="complete_order?picking_point=<% out.print(request.getParameter("picking_point")); %>&destination=<% out.print(request.getParameter("destination")); %>&preferred_driver=<% out.print(request.getParameter("preferred_driver")); %>&driver_id={{driver.id}} "> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div ng-if="countarrpreferred === 0">
                 <p class="align-center nothing-to-display-margin">Nothing to display :(</p>
-            <% } %>
-
+            </div>
         </div>
 
-        <div class="select-driver-border dark-grey" ng-init="getOtherDrivers()">
+        <div class="select-driver-border dark-grey">
             <h1>Other Drivers:</h1>
-            <% if (!otherDrivers.isEmpty()) {
-                for (User otherDriver : otherDrivers) { %>
-            <table class="table-select-driver">
-                <tr>
-                    <td>
-                        <img class="img-driver-pic" src="<% out.print(otherDriver.getProfilePicture()); %>" alt="DRIVER PICTURE">
-                    </td>
-                    <td>
-                        <p class="driver-name"> <% out.print(otherDriver.getName()); %> </p>
-                        <p class="star"><span class="orange">&#10025; <% out.print(String.format("%.1f", otherDriver.getRatings())); %> </span> (<% out.print(otherDriver.getVotes()); %>
-                            <% if (otherDriver.getVotes()> 1) { %>
-                            votes)
-                            <% } else { %>
-                            vote)
-                            <% } %>
-                        </p>
-                        <a href="complete_order?picking_point=<% out.print(request.getParameter("picking_point")); %>&destination=<% out.print(request.getParameter("destination")); %>&preferred_driver=<% out.print(request.getParameter("preferred_driver")); %>&driver_id=<% out.print(otherDriver.getId()); %> "> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
-                    </td>
-                </tr>
-            </table>
-            <%  }
-            } else { %>
-            <p class="align-center nothing-to-display-margin">Nothing to display :(</p>
-            <% } %>
+            <div ng-if="countarrother > 0">
+                <div ng-repeat="driver in arrOtherDriver">
+                    <table class="table-select-driver">
+                        <tr>
+                            <td>
+                                <img class="img-driver-pic" ng-src="{{driver.profilepicture}}" alt="DRIVER PICTURE">
+                            </td>
+                            <td>
+                                <p class="driver-name"> {{driver.name}} </p>
+                                <p class="star"><span class="orange">&#10025; {{driver.ratings}} </span> (driver.votes
+                                    <div ng-if="driver.votes > 1">
+                                        votes)
+                                    </div>
+                                    <div ng-if="driver.votes <= 1">
+                                        vote)
+                                    </div>
+                                </p>
+                                <a ng-href="complete_order?picking_point=<% out.print(request.getParameter("picking_point")); %>&destination=<% out.print(request.getParameter("destination")); %>&preferred_driver=<% out.print(request.getParameter("preferred_driver")); %>&driver_id={{driver.id}} "> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div ng-if="countarrother === 0">
+                <p class="align-center nothing-to-display-margin">Nothing to display :(</p>
+            </div>
         </div>
     </div>
-<%--
-<div class="select-driver-border">
-            <h1>Preferred Drivers:</h1>
-            <% if (!preferredDrivers.isEmpty()) {
-                for (User preferredDriver : preferredDrivers) { %>
-                <table class="table-select-driver">
-                    <tr>
-                        <td>
-                            <img class="img-driver-pic" src="<% out.print(preferredDriver.getProfilePicture()); %>" alt="DRIVER PICTURE">
-                        </td>
-                        <td>
-                            <p class="driver-name"> <% out.print(preferredDriver.getName()); %> </p>
-                            <p class="star"><span class="orange">&#10025; <% out.print(String.format("%.1f", preferredDriver.getRatings())); %> </span> (<% out.print(preferredDriver.getVotes()); %>
-                        <% if (preferredDriver.getVotes()> 1) { %>
-                                 votes)
-                        <% } else { %>
-                                 vote)
-                        <% } %>
-                            </p>
-                            <a href="complete_order?picking_point=<% out.print(request.getParameter("picking_point")); %>&destination=<% out.print(request.getParameter("destination")); %>&preferred_driver=<% out.print(request.getParameter("preferred_driver")); %>&driver_id=<% out.print(preferredDriver.getId()); %> "> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
-                        </td>
-                    </tr>
-                </table>
-            <%  }
-            } else { %>
-                <p class="align-center nothing-to-display-margin">Nothing to display :(</p>
-            <% } %>
-        </div>
---%>
-    <%--<div class="select-driver-border dark-grey">
-                <h1>Other Drivers:</h1>
-                <% if (!otherDrivers.isEmpty()) {
-                    for (User otherDriver : otherDrivers) { %>
-                <table class="table-select-driver">
-                    <tr>
-                        <td>
-                            <img class="img-driver-pic" src="<% out.print(otherDriver.getProfilePicture()); %>" alt="DRIVER PICTURE">
-                        </td>
-                        <td>
-                            <p class="driver-name"> <% out.print(otherDriver.getName()); %> </p>
-                            <p class="star"><span class="orange">&#10025; <% out.print(String.format("%.1f", otherDriver.getRatings())); %> </span> (<% out.print(otherDriver.getVotes()); %>
-                                <% if (otherDriver.getVotes()> 1) { %>
-                                votes)
-                                <% } else { %>
-                                vote)
-                                <% } %>
-                            </p>
-                            <a href="complete_order?picking_point=<% out.print(request.getParameter("picking_point")); %>&destination=<% out.print(request.getParameter("destination")); %>&preferred_driver=<% out.print(request.getParameter("preferred_driver")); %>&driver_id=<% out.print(otherDriver.getId()); %> "> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
-                        </td>
-                    </tr>
-                </table>
-                <%  }
-                } else { %>
-                <p class="align-center nothing-to-display-margin">Nothing to display :(</p>
-                <% } %>
-            </div>--%>
 </body>
 <script>
     var app = angular.module('selectDriverApp', []);
 
-    app.controller('showDrivers', function($scope, $location, $anchorScroll, $http, $timeout) {
-        $scope.picking_point = <% out.print(picking_point);%>;
-        $scope.preferred_driver = <% out.print(preferred_driver);%>;
-        $scope.destination = <% out.print(destination);%>;
+    app.controller('selectDriver', function($scope, $http, $location, $anchorScroll, $timeout) {
+        $scope.pickingpoint = <% out.print(request.getParameter("picking_point")); %>;
+        $scope.destination = <% out.print(request.getParameter("destination")); %>;
+        $scope.preferreddriver = <% out.print(request.getParameter("preferred_driver")); %>;
+        $scope.arrPreferredDriver = [];
+        $scope.arrOtherDriver = [];
 
-        $scope.arrpreferreddriver = [];
-        scope.arrotherdriver = [];
-        $scope.preferreddriver = ''; // url
-        $scope.otherdriver = ''; // url
-
-        $scope.token = 'aaa';
         $scope.username = 'crahels';
+        $scope.token = 'aaa';
+        $scope.countarrpreferred = 0;
+        $scope.countarrother = 0;
+        $scope.loadTime = 10000;
 
-        $scope.getPreferredDrivers = function() {
-            $http.get($scope.preferreddriver,{username: $scope.username, picking_point: $scope.picking_point, destination: $scope.destination, preferred_driver: $scope.preferred_driver, token: $scope.token})
+        $scope.preferreddriverurl = 'https://jrr-chat.herokuapp.com/history/crahels';
+        $scope.otherdriverurl = 'https://jrr-chat.herokuapp.com/history/crahels';
+
+        $scope.getPreferredDriver = function() {
+            $http.get($scope.preferreddriverurl, {username: $scope.username, pickingpoint: $scope.pickingpoint, destination: $scope.destination, preferreddriver: $scope.preferreddriver, token: $scope.token})
                 .then(function(response) {
-                    $scope.arrpreferreddriver = response.data;
+                    console.log(response.data);
+                    $scope.arrPreferredDriver = response.data;
+                    $scope.countarrpreferred = response.data.length;
+                    $scope.nextLoad();
                 }, function(response) {
-                    console.log("Unable to perform get request");
+                    console.log("unable to perform get request");
+                    $scope.nextLoad();
                 });
         };
 
-        $scope.getOtherDrivers = function() {
-            $http.get($scope.otherdriver,{username: $scope.username, picking_point: $scope.picking_point, destination: $scope.destination, preferred_driver: $scope.preferred_driver, token: $scope.token})
+        $scope.getOtherDriver = function() {
+            $http.get($scope.otherdriverurl, {username: $scope.username, pickingpoint: $scope.pickingpoint, destination: $scope.destination, preferreddriver: $scope.preferreddriver, token: $scope.token})
                 .then(function(response) {
-                    $scope.arrotherdriver = response.data;
+                    console.log(response.data);
+                    $scope.arrOtherDriver = response.data;
+                    $scope.countarrother = response.data.length;
+                    $scope.nextLoad();
                 }, function(response) {
-                    console.log("Unable to perform get request");
+                    console.log("unable to perform get request");
+                    $scope.nextLoad();
                 });
+        };
+
+        $scope.cancelNextLoad = function() {
+            $timeout.cancel($scope.loadPromise);
+        };
+
+        $scope.nextLoad = function() {
+            $scope.cancelNextLoad();
+            $scope.loadPromise = $timeout($scope.checkOrder(),$scope.loadTime);
         }
+
+        $scope.$on('$destroy', function() {
+            $scope.cancelNextLoad();
+        });
     });
 </script>
 </html>

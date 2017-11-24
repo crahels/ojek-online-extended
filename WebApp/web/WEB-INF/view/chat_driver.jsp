@@ -165,7 +165,7 @@
             $http.get($scope.historypassenger,{myself: $scope.from, other: $scope.to, token: $scope.token})
                 .then(function(response) {
                     $scope.chathistory = response.data.data;
-                    $http.get($scope.historydriver)
+                    $http.get($scope.historydriver, {myself: $scope.from, other: $scope.to, token: $scope.token})
                         .then(function(res) {
                             res.data.data.map(function(val) {
                                 $scope.chathistory.push(val);
