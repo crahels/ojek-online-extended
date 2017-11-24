@@ -24,7 +24,7 @@
 <body>
 <div class="container">
     <h2>Looking for an Order</h2>
-    <div ng-app="chatApp" ng-controller="chatShow">
+    <div ng-app="chatApp" ng-controller="chatShow" ng-init="requestPermission()">
         <div ng-show="findorder">
             <button class="find-order-button" ng-click="findOrder()">FIND ORDER</button>
         </div>
@@ -60,20 +60,21 @@
         </div>
     </div>
 </div>
-<!--<script>
+<script>
     importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js');
     importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
-</script>-->
-<script>
     var app = angular.module('chatApp', []);
 
     app.controller('chatShow', function($scope, $location, $anchorScroll, $http, $timeout) {
+        const messaging = firebase.messaging();
+
         $scope.chathistory = [];
         $scope.findorder = 1;
         $scope.gotorder = 0;
         $scope.findingorder = 0;
         $scope.cancelorder = 0;
         $scope.checkordersuccess = 0;
+        $scope.tokensent = false;
 
         $scope.token = 'aaa';
         $scope.from = 'crahels';
@@ -88,6 +89,7 @@
         $scope.historypassenger = 'https://jrr-chat.herokuapp.com/history/crahels';
         $scope.historydriver = 'https://jrr-chat.herokuapp.com/history/rayandrew';
         $scope.savechat = 'https://jrr-chat.herokuapp.com/sendchat';
+        $scope.sendtokenurl = '';
 
         $scope.send = function() {
             if ($scope.conv != null && $scope.conv != "") {
@@ -190,6 +192,80 @@
         $scope.$on('$destroy', function() {
             $scope.cancelNextLoad();
         });
+
+        messaging.onTokenRefresh(function() {
+            messaging.getToken()
+                .then(function(refreshedToken) {
+                    console.log('Token refreshed.');
+                    $scope.setTokenSentToServer(false);
+                    $scope.sendTokenToServer(refreshedToken);
+                    $scope.retrieveToken();
+                })
+                .catch(function(err) {
+                    console.log('Unable to retrieve token ', err);
+                });
+        });
+
+        $scope.appendMessage = function(payload) {
+            $scope.appendmsg = JSON.stringify(payload, null, 2);
+            console.log('Message to be append: ');
+            console.log($scope.appendmsg);
+            // $scope.chathistory.push(payload);
+        };
+
+        messaging.onMessage(function(payload) {
+            console.log('Message received.', payload);
+            $scope.appendMessage(payload);
+        });
+
+        $scope.setTokenSentToServer = function(sent) {
+            $scope.tokensent = sent;
+        }
+
+        $scope.sendTokenToServer = function(currentToken) {
+            if (!$scope.tokensent) {
+                console.log('Sending token to server...');
+                $scope.token = currentToken;
+                $http.post($scope.sendtokenurl, {username: $scope.from, token: $scope.token})
+                    .then(function(response) {
+                        console.log(response.data);
+                        $scope.setTokenSentToServer(true);
+                    }, function(response) {
+                        console.log("unable to perform post request");
+                    });
+            } else {
+                console.log('Token already sent to server so won\'t send it again.');
+            }
+        };
+
+        $scope.retrieveToken = function() {
+            messaging.getToken()
+                .then(function(currentToken) {
+                    if (currentToken) {
+                        $scope.sendTokenToServer(currentToken);
+                    } else {
+                        console.log('No Instance ID token available. Request permission to generate one.');
+                        $scope.setTokenSentToServer(false);
+                    }
+                })
+                .catch(function(err) {
+                    console.log('An error occurred while retrieving token. ', err);
+                    $scope.setTokenSentToServer(false);
+                });
+        };
+
+        $scope.requestPermission = function() {
+            console.log('Requesting permission...');
+            messaging.requestPermission()
+                .then(function() {
+                    console.log('Notification permission granted.');
+                    $scope.retrieveToken();
+                })
+                .catch(function(err) {
+                    console.log('Unable to get permission to notify.', err);
+                });
+        };
+
     });
 </script>
 </body>
