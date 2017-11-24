@@ -6,3 +6,4 @@ WebService/.idea/**
 WebService/WebService.iml
 
 *.xml
+*.DS_STORE
