@@ -23,6 +23,8 @@
 
 <body>
 <div class="container">
+    <input type="hidden" ng-model="from" value="<%= request.getSession().getAttribute("username").toString() %>">
+    <input type="hidden" ng-model="token" value="<%= request.getSession().getAttribute("access_token").toString() %>">
     <h2>Looking for an Order</h2>
     <div ng-app="chatApp" ng-controller="chatShow" ng-init="requestPermission()">
         <div ng-show="findorder">
@@ -38,7 +40,7 @@
         </div>
         <div ng-show="gotorder">
             <div ng-if="gotorder">
-                <div ng-init="getHistory()"></div>
+                <div ng-init="getHistory(); checkEndOrder();"></div>
             </div>
             <div class="header-driver"><span class="bold">Got an Order!</span></div>
             <div class="username-order"><span class="bold">{{usernamepassenger}}</span></div>
@@ -60,9 +62,33 @@
         </div>
     </div>
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js"></script>
+<link rel="manifest" href="manifest.json">
 <script>
-    importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js');
-    importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('firebase-messaging-sw.js').then(function(registration) {
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }).catch(function(err) {
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+        });
+    }
+
+    var config = {
+        apiKey: "AIzaSyBtisuPgPCI8Z54LrY9EhiMs1rfEb_mAXA",
+        authDomain: "tubes-3-wbd-c0ef6.firebaseapp.com",
+        databaseURL: "https://tubes-3-wbd-c0ef6.firebaseio.com",
+        projectId: "tubes-3-wbd-c0ef6",
+        storageBucket: "tubes-3-wbd-c0ef6.appspot.com",
+        messagingSenderId: "585220599787"
+    };
+    firebase.initializeApp(config);
+
     var app = angular.module('chatApp', []);
 
     app.controller('chatShow', function($scope, $location, $anchorScroll, $http, $timeout) {
@@ -76,20 +102,18 @@
         $scope.checkordersuccess = 0;
         $scope.tokensent = false;
 
-        $scope.token = 'aaa';
-        $scope.from = 'crahels';
-        $scope.to = 'rayandrew';
+        $scope.to = "";
 
         $scope.usernamepassenger = "";
-        $scope.loadTime = 10000;
+        $scope.loadTime = 5000;
 
-        $scope.findorderurl = 'https://jrr-chat.herokuapp.com/history/rayandrew';
-        $scope.cancelfindorderurl = 'https://jrr-chat.herokuapp.com/history/rayandrew';
-        $scope.checkorderurl = 'https://jrr-chat.herokuapp.com/history/rayandrew';
-        $scope.historypassenger = 'https://jrr-chat.herokuapp.com/history/crahels';
-        $scope.historydriver = 'https://jrr-chat.herokuapp.com/history/rayandrew';
-        $scope.savechat = 'https://jrr-chat.herokuapp.com/sendchat';
-        $scope.sendtokenurl = '';
+        $scope.findorderurl = 'http://localhost:8003/api/findorder';
+        $scope.cancelfindorderurl = 'https://localhost:8003/api/cancelorder';
+        $scope.checkorderurl = 'http://localhost:8003/api/checkorder';
+        $scope.history = 'http//localhost:8003/api/history';
+        $scope.savechat = 'http://localhost:8003/api/sendchat';
+        $scope.updatetokenurl = 'http://localhost:8003/api/updatetoken';
+        $scope.checkendorder = 'http://localhost:8003/api/checkendorder';
 
         $scope.send = function() {
             if ($scope.conv != null && $scope.conv != "") {
@@ -106,26 +130,39 @@
             }
         };
 
+        $scope.checkEndOrder = function() {
+            $http.post($scope.checkendorderurl, {token: $scope.token, username: $scope.from})
+                .then(function(response) {
+                    console.log(response.data);
+                    if (response.data.status) {
+                        window.location.href = "/profile";
+                    } else {
+                        $scope.nextLoadEndOrder();
+                    }
+                }, function(response) {
+                    console.log("unable to perform post request");
+                    $scope.nextLoadEndOrder();
+                });
+        };
+
         $scope.goToBottom = function() {
             $location.hash('endofchat');
             $anchorScroll();
-        }
+        };
 
         $scope.findOrder = function() {
-            // harus diganti jadi post
-            $http.get($scope.findorderurl, {token: $scope.token, username: $scope.from})
+            $http.post($scope.findorderurl, {token: $scope.token, username: $scope.from})
                 .then(function(response) {
                     console.log(response.data);
                     $scope.findorder = 0;
                     $scope.findingorder = 1;
                 }, function(response) {
-                    console.log("unable to perform get request");
+                    console.log("unable to perform post request");
                 });
-        }
+        };
 
         $scope.cancelFindOrder = function() {
-            // harus diganti jadi post
-            $http.get($scope.cancelfindorderurl, {token: $scope.token, username: $scope.from})
+            $http.post($scope.cancelfindorderurl, {token: $scope.token, username: $scope.from})
                 .then(function(response) {
                     console.log(response.data);
                     if (!$scope.checkordersuccess) {
@@ -134,20 +171,19 @@
                         $scope.findorder = 1;
                     }
                 }, function(response) {
-                    console.log("unable to perform get request");
+                    console.log("unable to perform post request");
                 });
-        }
+        };
 
         $scope.checkOrder = function() {
-            // harus diganti jadi post dan di uncomment
-            $http.get($scope.checkorderurl, {token: $scope.token, username: $scope.from})
+            $http.post($scope.checkorderurl, {token: $scope.token, username: $scope.from})
                 .then(function(response) {
                     console.log(response.data);
                     if (!$scope.cancelorder) {
                         if (response.data.orderedBy != null) {
                             $scope.checkordersuccess = 1;
-                            $scope.usernamepassenger = "udah ada";
                             $scope.usernamepassenger = response.data.orderedBy;
+                            $scope.to = response.data.orderedBy;
                             $scope.findingorder = 0;
                             $scope.gotorder = 1;
                         } else {
@@ -160,23 +196,22 @@
                         $scope.nextLoad();
                     }
                 });
-        }
+        };
 
         $scope.getHistory = function() {
-            // harus diganti jadi post
-            $http.get($scope.historypassenger,{myself: $scope.from, other: $scope.to, token: $scope.token})
+            $http.post($scope.history,{from: $scope.from, to: $scope.to, token: $scope.token})
                 .then(function(response) {
-                    $scope.chathistory = response.data.data;
-                    $http.get($scope.historydriver, {myself: $scope.from, other: $scope.to, token: $scope.token})
+                    $scope.chathistory = response.data;
+                    $http.post($scope.history, {to: $scope.from, from: $scope.to, token: $scope.token})
                         .then(function(res) {
-                            res.data.data.map(function(val) {
+                            res.data.map(function(val) {
                                 $scope.chathistory.push(val);
                             });
                         }, function(res) {
-                            console.log("Unable to perform get request");
+                            console.log("Unable to perform post request");
                         });
                 }, function(response) {
-                    console.log("Unable to perform get request");
+                    console.log("Unable to perform post request");
                 });
         };
 
@@ -184,13 +219,26 @@
             $timeout.cancel($scope.loadPromise);
         };
 
+        $scope.cancelNextLoadEndOrder = function() {
+            $timeout.cancel($scope.loadPromiseEndOrder);
+        };
+
         $scope.nextLoad = function() {
             $scope.cancelNextLoad();
             $scope.loadPromise = $timeout($scope.checkOrder(),$scope.loadTime);
         }
 
+        $scope.nextLoadEndOrder = function() {
+            $scope.cancelNextLoadEndOrder();
+            $scope.loadPromiseEndOrder = $timeout($scope.checkEndOrder(),$scope.loadTime);
+        };
+
         $scope.$on('$destroy', function() {
             $scope.cancelNextLoad();
+        });
+
+        $scope.$on('$destroy', function() {
+            $scope.cancelNextLoadEndOrder();
         });
 
         messaging.onTokenRefresh(function() {
@@ -206,27 +254,30 @@
                 });
         });
 
-        $scope.appendMessage = function(payload) {
-            $scope.appendmsg = JSON.stringify(payload, null, 2);
-            console.log('Message to be append: ');
-            console.log($scope.appendmsg);
-            // $scope.chathistory.push(payload);
-        };
-
         messaging.onMessage(function(payload) {
             console.log('Message received.', payload);
             $scope.appendMessage(payload);
         });
 
+        $scope.appendMessage = function(payload) {
+            $scope.appendmsg = JSON.stringify(payload, null, 2);
+            console.log('Message to be append: ');
+            console.log($scope.appendmsg);
+            $scope.chathistory.push(payload);
+            $scope.appendmsg.data.map(function(val) {
+                $scope.chathistory.push(Object.assign({}, val, { from: $scope.from }));
+            });
+        };
+
         $scope.setTokenSentToServer = function(sent) {
             $scope.tokensent = sent;
-        }
+        };
 
         $scope.sendTokenToServer = function(currentToken) {
             if (!$scope.tokensent) {
                 console.log('Sending token to server...');
-                $scope.token = currentToken;
-                $http.post($scope.sendtokenurl, {username: $scope.from, token: $scope.token})
+                $scope.tokenFCM = currentToken;
+                $http.post($scope.updatetokenurl, {username: $scope.from, tokenFCM: currentToken, token: $scope.token})
                     .then(function(response) {
                         console.log(response.data);
                         $scope.setTokenSentToServer(true);
@@ -242,6 +293,8 @@
             messaging.getToken()
                 .then(function(currentToken) {
                     if (currentToken) {
+                        console.log('your token is: ');
+                        console.log(currentToken);
                         $scope.sendTokenToServer(currentToken);
                     } else {
                         console.log('No Instance ID token available. Request permission to generate one.');
@@ -266,6 +319,7 @@
                 });
         };
 
+        //$scope.requestPermission();
     });
 </script>
 </body>

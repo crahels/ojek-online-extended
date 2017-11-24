@@ -9,7 +9,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%! String currentPage = "order"; %>
 <%! String currentSubPage = "chat_passenger"; %>
-<% User driver = (User) request.getAttribute("driver"); %>
+<% String picking_point = request.getParameter("picking_point"); %>
+<% String destination = request.getParameter("destination"); %>
+<% String tokenFCM = request.getParameter("tokenFCM"); %>
+<% String driverId = request.getParameter("driver_id"); %>
+<% String preferred_driver = request.getParameter("preferred_driver"); %>
 
 <html>
 <head>
@@ -26,6 +30,14 @@
 
 <body>
     <div class="container">
+        <input type="hidden" ng-model="from" value="<%= request.getSession().getAttribute("username").toString() %>">
+        <input type="hidden" ng-model="token" value="<%= request.getSession().getAttribute("access_token").toString() %>">
+        <input type="hidden" ng-model="tokenFCM" value="<%= tokenFCM %>">
+        <input type="hidden" ng-model="picking_point" value="<%= picking_point %>">
+        <input type="hidden" ng-model="destination" value="<%= destination %>">
+        <input type="hidden" ng-model="id" value="<%= driverId %>">
+        <input type="hidden" ng-model="preferred_driver" value="<%= preferred_driver %>">
+
         <%@ include file="order_header.jsp" %>
         <div ng-app="chatApp" ng-init="getHistory()" ng-controller="chatShow">
             <div id="containerchat">
@@ -43,27 +55,46 @@
                 <input class="inpconv" type="text" ng-model="conv" placeholder="Enter your message">
                 <button class="sendbutton" ng-click="send()">Kirim</button>
             </div>
-            <button class="closebutton">CLOSE</button>
+            <button ng-click="completeOrder()" class="closebutton">CLOSE</button>
         </div>
     </div>
-    <!--<script>
-        importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js');
-        importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
-    </script>-->
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js"></script>
+    <link rel="manifest" href="manifest.json">
     <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('firebase-messaging-sw.js').then(function(registration) {
+                // Registration was successful
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }).catch(function(err) {
+                // registration failed :(
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        }
+
+        var config = {
+            apiKey: "AIzaSyBtisuPgPCI8Z54LrY9EhiMs1rfEb_mAXA",
+            authDomain: "tubes-3-wbd-c0ef6.firebaseapp.com",
+            databaseURL: "https://tubes-3-wbd-c0ef6.firebaseio.com",
+            projectId: "tubes-3-wbd-c0ef6",
+            storageBucket: "tubes-3-wbd-c0ef6.appspot.com",
+            messagingSenderId: "585220599787"
+        };
+        firebase.initializeApp(config);
+
         var app = angular.module('chatApp', []);
 
-        app
-        .controller('chatShow', function($scope, $http, $location, $anchorScroll, $timeout) {
+        app.controller('chatShow', function($scope, $http, $location, $anchorScroll, $timeout) {
             $scope.chathistory = [];
 
-            $scope.from = 'crahels';
-            $scope.to = 'rayandrew';
-            $scope.token = 'aaa';
+            $scope.to = "";
+            $scope.tokensent = false;
 
-            $scope.historypassenger = 'https://jrr-chat.herokuapp.com/history/crahels';
-            $scope.historydriver = 'https://jrr-chat.herokuapp.com/history/rayandrew';
-            $scope.savechat = 'https://jrr-chat.herokuapp.com/sendchat';
+            $scope.history = 'http//localhost:8003/api/history';
+            $scope.savechat = 'http://localhost:8003/api/sendchat';
+            $scope.updatetokenurl = 'http://localhost:8003/api/updatetoken';
 
             $scope.send = function() {
                 if ($scope.conv != null && $scope.conv != "") {
@@ -86,19 +117,101 @@
             };
 
             $scope.getHistory = function() {
-                $http.get($scope.historypassenger, {myself: $scope.from, other: $scope.to, token: $scope.token})
+                $http.post($scope.history, {from: $scope.from, to: $scope.to, token: $scope.token})
                     .then(function(response) {
-                        $scope.chathistory = response.data.data;
-                        $http.get($scope.historydriver, {myself: $scope.from, other: $scope.to, token: $scope.token})
+                        $scope.chathistory = response.data;
+                        $http.post($scope.history, {from: $scope.to, to: $scope.from, token: $scope.token})
                             .then(function(res) {
-                                res.data.data.map(function(val) {
+                                res.data.map(function(val) {
                                     $scope.chathistory.push(val);
                                 });
                             }, function(res) {
-                                console.log("Unable to perform get request");
+                                console.log("Unable to perform post request");
                             });
                     }, function(response) {
-                        console.log("Unable to perform get request");
+                        console.log("Unable to perform post request");
+                    });
+            };
+
+            $scope.completeOrder = function() {
+                $location.url("http://localhost:8000/complete_order?picking_point=" + $scope.picking_point + "&destination=" + $scope.destination + "&preferred_driver=" + $scope.preferred_driver + "&driver_id=" + $scope.id + "&tokenFCM=" + $scope.tokenFCM);
+            }
+
+            messaging.onTokenRefresh(function() {
+                messaging.getToken()
+                    .then(function(refreshedToken) {
+                        console.log('Token refreshed.');
+                        $scope.setTokenSentToServer(false);
+                        $scope.sendTokenToServer(refreshedToken);
+                        $scope.retrieveToken();
+                    })
+                    .catch(function(err) {
+                        console.log('Unable to retrieve token ', err);
+                    });
+            });
+
+            messaging.onMessage(function(payload) {
+                console.log('Message received.', payload);
+                $scope.appendMessage(payload);
+            });
+
+            $scope.appendMessage = function(payload) {
+                $scope.appendmsg = JSON.stringify(payload, null, 2);
+                console.log('Message to be append: ');
+                console.log($scope.appendmsg);
+                $scope.chathistory.push(payload);
+                $scope.appendmsg.data.map(function(val) {
+                    $scope.chathistory.push(Object.assign({}, val, { from: $scope.from }));
+                });
+            };
+
+            $scope.setTokenSentToServer = function(sent) {
+                $scope.tokensent = sent;
+            };
+
+            $scope.sendTokenToServer = function(currentToken) {
+                if (!$scope.tokensent) {
+                    console.log('Sending token to server...');
+                    $scope.tokenFCM = currentToken;
+                    $http.post($scope.updatetokenurl, {username: $scope.from, tokenFCM: currentToken, token: $scope.token})
+                        .then(function(response) {
+                            console.log(response.data);
+                            $scope.setTokenSentToServer(true);
+                        }, function(response) {
+                            console.log("unable to perform post request");
+                        });
+                } else {
+                    console.log('Token already sent to server so won\'t send it again.');
+                }
+            };
+
+            $scope.retrieveToken = function() {
+                messaging.getToken()
+                    .then(function(currentToken) {
+                        if (currentToken) {
+                            console.log('your token is: ');
+                            console.log(currentToken);
+                            $scope.sendTokenToServer(currentToken);
+                        } else {
+                            console.log('No Instance ID token available. Request permission to generate one.');
+                            $scope.setTokenSentToServer(false);
+                        }
+                    })
+                    .catch(function(err) {
+                        console.log('An error occurred while retrieving token. ', err);
+                        $scope.setTokenSentToServer(false);
+                    });
+            };
+
+            $scope.requestPermission = function() {
+                console.log('Requesting permission...');
+                messaging.requestPermission()
+                    .then(function() {
+                        console.log('Notification permission granted.');
+                        $scope.retrieveToken();
+                    })
+                    .catch(function(err) {
+                        console.log('Unable to get permission to notify.', err);
                     });
             };
         });

@@ -25,7 +25,9 @@
             <li>
                 <a <% if(currentPage.equals("order")) { %>
 				class="active" <% } %>
-                href="order">Order</a></li>
+                href="<% if (Boolean.parseBoolean(request.getSession().getAttribute("is_driver").toString())) { %>
+                chat_driver <% } else { %>
+                order<% } %>">Order</a></li>
             <li>
                 <a <% if(currentPage.equals("history")) { %>
                         class="active" <% } %>

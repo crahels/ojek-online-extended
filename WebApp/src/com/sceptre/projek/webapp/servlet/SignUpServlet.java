@@ -21,7 +21,12 @@ import java.util.Map;
 public class SignUpServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getSession().getAttribute("access_token") != null) {
-            response.sendRedirect("profile");
+            if (Boolean.parseBoolean(request.getSession().getAttribute("is_driver").toString())) {
+                response.sendRedirect("chat_driver");
+            } else {
+               response.sendRedirect("order");
+            }
+            // response.sendRedirect("profile");
         } else {
             RequestDispatcher rs = request.getRequestDispatcher("/WEB-INF/view/signup.jsp");
             rs.forward(request, response);
@@ -56,9 +61,10 @@ public class SignUpServlet extends HttpServlet {
             session.setAttribute("refresh_token", access_token);
             session.setAttribute("expiry_time", expiry_time);
             session.setAttribute("username", username);
+            session.setAttribute("is_driver", isDriver);
 
             if (isDriver) {
-                response.sendRedirect("profile");
+                response.sendRedirect("chat_driver");
             } else {
                 response.sendRedirect("order");
             }
