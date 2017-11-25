@@ -30,10 +30,10 @@ public class OrderSelectDriverServlet extends HttpServlet {
                 if (authResult == WSClient.AUTH_RETRY) {
                     doGet(request, response);
                 } else if (authResult == WSClient.AUTH_OK) {
-                    List<User> preferredDrivers = User.extractDrivers(jsonObject.getJSONArray("preferred_drivers"));
-                    List<User> otherDrivers = User.extractDrivers(jsonObject.getJSONArray("other_drivers"));
-                    request.setAttribute("preferred_drivers", preferredDrivers);
-                    request.setAttribute("other_drivers", otherDrivers);
+                    // List<User> preferredDrivers = User.extractDrivers(jsonObject.getJSONArray("preferred_drivers"));
+                    // List<User> otherDrivers = User.extractDrivers(jsonObject.getJSONArray("other_drivers"));
+                    request.setAttribute("preferred_drivers", jsonObject.getJSONArray("preferred_drivers"));
+                    request.setAttribute("other_drivers", jsonObject.getJSONArray("other_drivers"));
                     RequestDispatcher rs = request.getRequestDispatcher("/WEB-INF/view/order_select_driver.jsp");
                     rs.forward(request, response);
                 }

@@ -14,6 +14,7 @@
 <% String tokenFCM = request.getParameter("tokenFCM"); %>
 <% String driverId = request.getParameter("driver_id"); %>
 <% String preferred_driver = request.getParameter("preferred_driver"); %>
+<% String driver = request.getParameter("driver");%>
 
 <html>
 <head>
@@ -30,29 +31,30 @@
 
 <body>
     <div class="container">
-        <input type="hidden" ng-model="from" value="<%= request.getSession().getAttribute("username").toString() %>">
-        <input type="hidden" ng-model="token" value="<%= request.getSession().getAttribute("access_token").toString() %>">
-        <input type="hidden" ng-model="tokenFCM" value="<%= tokenFCM %>">
-        <input type="hidden" ng-model="picking_point" value="<%= picking_point %>">
-        <input type="hidden" ng-model="destination" value="<%= destination %>">
-        <input type="hidden" ng-model="id" value="<%= driverId %>">
-        <input type="hidden" ng-model="preferred_driver" value="<%= preferred_driver %>">
+        <input type="hidden" id="from" value="<%= request.getSession().getAttribute("username").toString() %>">
+        <input type="hidden" id="token" value="<%= request.getSession().getAttribute("access_token").toString() %>">
+        <input type="hidden" id="tokenFCM" value="<%= tokenFCM %>">
+        <input type="hidden" id="picking_point" value="<%= picking_point %>">
+        <input type="hidden" id="destination" value="<%= destination %>">
+        <input type="hidden" id="id" value="<%= driverId %>">
+        <input type="hidden" id="preferred_driver" value="<%= preferred_driver %>">
+        <input type="hidden" id="driver" value="<%= driver %>">
 
         <%@ include file="order_header.jsp" %>
-        <div ng-app="chatApp" ng-init="getHistory()" ng-controller="chatShow">
-            <div id="containerchat">
+        <div ng-app="chatApp" ng-controller="chatShow" ng-init="requestPermission()">
+            <div id="containerchat" ng-init="getHistory()">
                 <div class="chat" ng-repeat="conversation in chathistory | orderBy:'timestamp'">
-                    <div ng-if="conversation.from  === 'crahels'">
+                    <div ng-if="conversation.from  === from">
                         <div ng-init="goToBottom()" class="chatsender">{{conversation.message}}</div>
                     </div>
-                    <div ng-if="conversation.to === 'crahels'">
+                    <div ng-if="conversation.to === from">
                         <div ng-init="goToBottom()" class="chatreceiver">{{conversation.message}}</div>
                     </div>
                 </div>
                 <div id="endofchat"></div>
             </div>
             <div class="containerinput">
-                <input class="inpconv" type="text" ng-model="conv" placeholder="Enter your message">
+                <input class="inpconv" type="text" id="conv" placeholder="Enter your message">
                 <button class="sendbutton" ng-click="send()">Kirim</button>
             </div>
             <button ng-click="completeOrder()" class="closebutton">CLOSE</button>
@@ -86,23 +88,33 @@
 
         var app = angular.module('chatApp', []);
 
-        app.controller('chatShow', function($scope, $http, $location, $anchorScroll, $timeout) {
-            $scope.chathistory = [];
+        app.controller('chatShow', function($scope, $http, $location, $anchorScroll) {
+            const messaging = firebase.messaging();
 
-            $scope.to = "";
+            $scope.chathistory = [];
+            $scope.from = document.getElementById("from").value;
+            $scope.token = document.getElementById("token").value;
+            $scope.tokenFCM = document.getElementById("tokenFCM").value;
+            $scope.picking_point = document.getElementById("picking_point").value;
+            $scope.destination = document.getElementById("destination").value;
+            $scope.id = document.getElementById("id").value;
+            $scope.preferred_driver = document.getElementById("preferred_driver").value;
+
+            $scope.to = document.getElementById("driver").value;
             $scope.tokensent = false;
 
-            $scope.history = 'http//localhost:8003/api/history';
+            $scope.history = 'http://localhost:8003/api/history';
             $scope.savechat = 'http://localhost:8003/api/sendchat';
             $scope.updatetokenurl = 'http://localhost:8003/api/updatetoken';
 
             $scope.send = function() {
-                if ($scope.conv != null && $scope.conv != "") {
-                    $http.post($scope.savechat, {from: $scope.from, to: $scope.to, message: $scope.conv, token: $scope.token})
+                $scope.conv = document.getElementById("conv").value;
+                if ($scope.conv !== null && $scope.conv !== "") {
+                    $http.post($scope.savechat, { username: $scope.from, from: $scope.from, to: $scope.to, message: $scope.conv, token: $scope.token })
                     .then(function(response) {
                         console.log(response.data);
                         $scope.chathistory.push(response.data);
-                        $scope.conv = "";
+                        document.getElementById("conv").value = "";
                     }, function(response) {
                         console.log("unable to perform post request");
                     });
@@ -117,10 +129,10 @@
             };
 
             $scope.getHistory = function() {
-                $http.post($scope.history, {from: $scope.from, to: $scope.to, token: $scope.token})
+                $http.post($scope.history, {username: $scope.from, from: $scope.from, to: $scope.to, token: $scope.token})
                     .then(function(response) {
                         $scope.chathistory = response.data;
-                        $http.post($scope.history, {from: $scope.to, to: $scope.from, token: $scope.token})
+                        $http.post($scope.history, {username: $scope.from, to: $scope.from, from: $scope.to, token: $scope.token})
                             .then(function(res) {
                                 res.data.map(function(val) {
                                     $scope.chathistory.push(val);
@@ -133,8 +145,12 @@
                     });
             };
 
+            $scope.$on('$destroy', function() {
+                $scope.cancelNextLoadEndOrder();
+            });
+
             $scope.completeOrder = function() {
-                $location.url("http://localhost:8000/complete_order?picking_point=" + $scope.picking_point + "&destination=" + $scope.destination + "&preferred_driver=" + $scope.preferred_driver + "&driver_id=" + $scope.id + "&tokenFCM=" + $scope.tokenFCM);
+                window.location.href = "http://localhost:8000/complete_order?picking_point=" + $scope.picking_point + "&destination=" + $scope.destination + "&preferred_driver=" + $scope.preferred_driver + "&driver_id=" + $scope.id + "&tokenFCM=" + $scope.tokenFCM;
             }
 
             messaging.onTokenRefresh(function() {
@@ -151,19 +167,10 @@
             });
 
             messaging.onMessage(function(payload) {
-                console.log('Message received.', payload);
-                $scope.appendMessage(payload);
+                console.log('Message received.', payload.data);
+                $scope.chathistory.push(Object.assign({}, payload.data, { from: $scope.to }));
+                $scope.$apply();
             });
-
-            $scope.appendMessage = function(payload) {
-                $scope.appendmsg = JSON.stringify(payload, null, 2);
-                console.log('Message to be append: ');
-                console.log($scope.appendmsg);
-                $scope.chathistory.push(payload);
-                $scope.appendmsg.data.map(function(val) {
-                    $scope.chathistory.push(Object.assign({}, val, { from: $scope.from }));
-                });
-            };
 
             $scope.setTokenSentToServer = function(sent) {
                 $scope.tokensent = sent;

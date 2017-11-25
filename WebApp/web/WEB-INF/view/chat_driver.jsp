@@ -23,8 +23,8 @@
 
 <body>
 <div class="container">
-    <input type="hidden" ng-model="from" value="<%= request.getSession().getAttribute("username").toString() %>">
-    <input type="hidden" ng-model="token" value="<%= request.getSession().getAttribute("access_token").toString() %>">
+    <input type="hidden" id="from" value="<%= request.getSession().getAttribute("username").toString() %>">
+    <input type="hidden" id="token" value="<%= request.getSession().getAttribute("access_token").toString() %>">
     <h2>Looking for an Order</h2>
     <div ng-app="chatApp" ng-controller="chatShow" ng-init="requestPermission()">
         <div ng-show="findorder">
@@ -40,7 +40,7 @@
         </div>
         <div ng-show="gotorder">
             <div ng-if="gotorder">
-                <div ng-init="getHistory(); checkEndOrder();"></div>
+                <div ng-init="checkEndOrder(); getHistory();"></div>
             </div>
             <div class="header-driver"><span class="bold">Got an Order!</span></div>
             <div class="username-order"><span class="bold">{{usernamepassenger}}</span></div>
@@ -56,7 +56,7 @@
                 <div id="endofchat"></div>
             </div>
             <div class="containerinput">
-                <input class="inpconv" type="text" ng-model="conv" placeholder="Enter your message">
+                <input class="inpconv" type="text" id="conv" placeholder="Enter your message">
                 <button class="sendbutton" ng-click="send()">Kirim</button>
             </div>
         </div>
@@ -102,26 +102,29 @@
         $scope.checkordersuccess = 0;
         $scope.tokensent = false;
 
+        $scope.token = document.getElementById("token").value;
+        $scope.from = document.getElementById("from").value;
         $scope.to = "";
 
         $scope.usernamepassenger = "";
-        $scope.loadTime = 5000;
+        $scope.loadTime = 15000;
 
         $scope.findorderurl = 'http://localhost:8003/api/findorder';
-        $scope.cancelfindorderurl = 'https://localhost:8003/api/cancelorder';
+        $scope.cancelfindorderurl = 'http://localhost:8003/api/cancelorder';
         $scope.checkorderurl = 'http://localhost:8003/api/checkorder';
-        $scope.history = 'http//localhost:8003/api/history';
+        $scope.history = 'http://localhost:8003/api/history';
         $scope.savechat = 'http://localhost:8003/api/sendchat';
         $scope.updatetokenurl = 'http://localhost:8003/api/updatetoken';
         $scope.checkendorder = 'http://localhost:8003/api/checkendorder';
 
         $scope.send = function() {
-            if ($scope.conv != null && $scope.conv != "") {
-                $http.post($scope.savechat, {from: $scope.from, to: $scope.to, message: $scope.conv, token: $scope.token})
+            $scope.conv = document.getElementById("conv").value;
+            if ($scope.conv !== null && $scope.conv !== "") {
+                $http.post($scope.savechat, {username: $scope.from, from: $scope.from, to: $scope.to, message: $scope.conv, token: $scope.token})
                     .then(function(response) {
                         console.log(response.data);
                         $scope.chathistory.push(response.data);
-                        $scope.conv = "";
+                        document.getElementById("conv").value = "";
                     }, function(response) {
                         console.log("unable to perform post request");
                     });
@@ -130,10 +133,11 @@
             }
         };
 
+
         $scope.checkEndOrder = function() {
-            $http.post($scope.checkendorderurl, {token: $scope.token, username: $scope.from})
+            $http.post($scope.checkendorder, { token: $scope.token, username: $scope.from })
                 .then(function(response) {
-                    console.log(response.data);
+                    // console.log(response.data);
                     if (response.data.status) {
                         window.location.href = "/profile";
                     } else {
@@ -154,6 +158,7 @@
             $http.post($scope.findorderurl, {token: $scope.token, username: $scope.from})
                 .then(function(response) {
                     console.log(response.data);
+                    $scope.cancelorder = 0;
                     $scope.findorder = 0;
                     $scope.findingorder = 1;
                 }, function(response) {
@@ -178,9 +183,9 @@
         $scope.checkOrder = function() {
             $http.post($scope.checkorderurl, {token: $scope.token, username: $scope.from})
                 .then(function(response) {
-                    console.log(response.data);
+                   // console.log(response.data);
                     if (!$scope.cancelorder) {
-                        if (response.data.orderedBy != null) {
+                        if (response.data.orderedBy) {
                             $scope.checkordersuccess = 1;
                             $scope.usernamepassenger = response.data.orderedBy;
                             $scope.to = response.data.orderedBy;
@@ -199,10 +204,10 @@
         };
 
         $scope.getHistory = function() {
-            $http.post($scope.history,{from: $scope.from, to: $scope.to, token: $scope.token})
+            $http.post($scope.history, {username: $scope.from, from: $scope.from, to: $scope.to, token: $scope.token})
                 .then(function(response) {
                     $scope.chathistory = response.data;
-                    $http.post($scope.history, {to: $scope.from, from: $scope.to, token: $scope.token})
+                    $http.post($scope.history, {username: $scope.from, to: $scope.from, from: $scope.to, token: $scope.token})
                         .then(function(res) {
                             res.data.map(function(val) {
                                 $scope.chathistory.push(val);
@@ -255,19 +260,9 @@
         });
 
         messaging.onMessage(function(payload) {
-            console.log('Message received.', payload);
-            $scope.appendMessage(payload);
+            console.log('Message received.', payload.data);
+            $scope.chathistory.push(Object.assign({}, payload.data, { from: $scope.to }));
         });
-
-        $scope.appendMessage = function(payload) {
-            $scope.appendmsg = JSON.stringify(payload, null, 2);
-            console.log('Message to be append: ');
-            console.log($scope.appendmsg);
-            $scope.chathistory.push(payload);
-            $scope.appendmsg.data.map(function(val) {
-                $scope.chathistory.push(Object.assign({}, val, { from: $scope.from }));
-            });
-        };
 
         $scope.setTokenSentToServer = function(sent) {
             $scope.tokensent = sent;
@@ -293,7 +288,7 @@
             messaging.getToken()
                 .then(function(currentToken) {
                     if (currentToken) {
-                        console.log('your token is: ');
+                        console.log('your token: ');
                         console.log(currentToken);
                         $scope.sendTokenToServer(currentToken);
                     } else {

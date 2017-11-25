@@ -32,7 +32,7 @@ public class OrderWSImpl implements OrderWS{
             try{
                 conn = DatabaseManager.createConnection();
                 statement = conn.createStatement();
-                String query = "SELECT users.id, name, profile_picture, COUNT(rating) AS votes, AVG(rating) AS ratings " +
+                String query = "SELECT users.id, username, name, profile_picture, COUNT(rating) AS votes, AVG(rating) AS ratings " +
                         "FROM users INNER JOIN user_preferred_locations ON users.id = user_preferred_locations.user_id " +
                         "LEFT JOIN orders ON orders.driver_id= users.id " +
                         "WHERE username <> '" +  username + "' AND UPPER(name)=UPPER('" + driverName +"') AND is_driver=true " +
@@ -42,7 +42,7 @@ public class OrderWSImpl implements OrderWS{
 
                 JSONResponse.put("preferred_drivers", extractDrivers(statement.executeQuery(query)));
 
-                query = "SELECT users.id, name, profile_picture, COUNT(rating) AS votes, AVG(rating) AS ratings " +
+                query = "SELECT users.id, username, name, profile_picture, COUNT(rating) AS votes, AVG(rating) AS ratings " +
                         "FROM users INNER JOIN user_preferred_locations ON users.id = user_preferred_locations.user_id " +
                         "LEFT JOIN orders ON orders.driver_id= users.id " +
                         "WHERE username <> '" +  username + "' AND UPPER(name) <> UPPER('" + driverName +"') AND is_driver=true " +
@@ -84,6 +84,7 @@ public class OrderWSImpl implements OrderWS{
             while(rs.next()) {
                 JSONObject driver = new JSONObject();
                 driver.put("id", rs.getInt("id"));
+                driver.put("username", rs.getString("username"));
                 driver.put("name", rs.getString("name"));
                 driver.put("profile_picture", rs.getString("profile_picture"));
                 driver.put("votes", rs.getInt("votes"));

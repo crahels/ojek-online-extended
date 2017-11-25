@@ -12,10 +12,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%! String currentPage = "order"; %>
 <%! String currentSubPage = "select_driver"; %>
-<%  List<User> preferredDrivers = (List<User>) request.getAttribute("preferred_drivers");
-    List<User> otherDrivers = (List<User>) request.getAttribute("other_drivers");
-    String pDrivers = preferredDrivers.toString();
-    String oDrivers = otherDrivers.toString();
+<%
+    String pDrivers = request.getAttribute("preferred_drivers").toString();
+    String oDrivers = request.getAttribute("other_drivers").toString();
 %>
 
 <html>
@@ -25,21 +24,23 @@
     <link href="../../assets/css/style.css" rel="stylesheet">
     <link rel="shortcut icon" href="../../assets/favicon.png" type="image/x-icon">
     <link rel="icon" href="../../assets/favicon.png" type="image/x-icon">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-animate.js"></script>
 </head>
 
 <%@ include file="header.jsp" %>
 
 <body>
-    <input type="hidden" ng-model="preferred" value="<%= pDrivers %>">
-    <input type="hidden" ng-model="other" value="<%= oDrivers %>">
-    <input type="hidden" ng-model="token" value="<%= request.getSession().getAttribute("access_token").toString() %>">
-    <input type="hidden" ng-model="username" value="<%= request.getSession().getAttribute("username").toString() %>">
-    <input type="hidden" ng-model="picking_point" value="<%= request.getParameter("picking_point") %>">
-    <input type="hidden" ng-model="destination" value="<%= request.getParameter("destination") %>">
-    <input type="hidden" ng-model="preferred_driver" value="<%= request.getParameter("preferred_driver") %>">
-    <div class="container dark-grey" ng-app="selectDriverApp" ng-controller="selectDriver" ng-init="getDriver()">
+    <input type="hidden" id="preferred" value='<%= pDrivers %>'>
+    <input type="hidden" id="other" value='<%= oDrivers %>'>
+    <input type="hidden" id="token" value="<%= request.getSession().getAttribute("access_token").toString() %>">
+    <input type="hidden" id="username" value="<%= request.getSession().getAttribute("username").toString() %>">
+    <input type="hidden" id="picking_point" value="<%= request.getParameter("picking_point") %>">
+    <input type="hidden" id="destination" value="<%= request.getParameter("destination") %>">
+    <input type="hidden" id="preferred_driver" value="<%= request.getParameter("preferred_driver") %>">
+    <div class="container dark-grey" ng-app="selectDriverApp" ng-controller="selectDriver" ng-init="requestPermission()">
         <%@ include file="order_header.jsp" %>
-        <div class="select-driver-border">
+        <div class="select-driver-border" ng-init="getDriver()">
             <h1>Preferred Drivers:</h1>
             <div ng-if="countarrpreferred > 0">
                 <div ng-repeat="driver in arrPreferredDriver">
@@ -58,7 +59,7 @@
                                         vote)
                                     </div>
                                 </p>
-                                <a ng-click="assign(driver.username, driver.id)"> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
+                                <a ng-click="startOrder(driver.username, driver.id)"> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
                             </td>
                         </tr>
                     </table>
@@ -88,7 +89,7 @@
                                         vote)
                                     </div>
                                 </p>
-                                <a ng-click="assign(driver.username, driver.id)"> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
+                                <a ng-click="startOrder(driver.username, driver.id)"> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
                             </td>
                         </tr>
                     </table>
@@ -99,157 +100,158 @@
             </div>
         </div>
     </div>
-</body>
-<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
-<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js"></script>
-<link rel="manifest" href="manifest.json">
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('firebase-messaging-sw.js').then(function(registration) {
-            // Registration was successful
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        }).catch(function(err) {
-            // registration failed :(
-            console.log('ServiceWorker registration failed: ', err);
-        });
-    }
-
-    var config = {
-        apiKey: "AIzaSyBtisuPgPCI8Z54LrY9EhiMs1rfEb_mAXA",
-        authDomain: "tubes-3-wbd-c0ef6.firebaseapp.com",
-        databaseURL: "https://tubes-3-wbd-c0ef6.firebaseio.com",
-        projectId: "tubes-3-wbd-c0ef6",
-        storageBucket: "tubes-3-wbd-c0ef6.appspot.com",
-        messagingSenderId: "585220599787"
-    };
-    firebase.initializeApp(config);
-
-    var app = angular.module('selectDriverApp', []);
-
-    app.controller('selectDriver', function($scope, $http, $location, $anchorScroll, $timeout) {
-        $scope.arrPreferredDriver = [];
-        $scope.arrOtherDriver = [];
-
-        $scope.countarrpreferred = 0;
-        $scope.countarrother = 0;
-        $scope.loadTime = 5000;
-        $scope.tokensent = false;
-
-        $scope.prefdriver = JSON.parse(preferred);
-        $scope.othdriver = JSON.parse(other);
-
-        $scope.driverurl = 'http//localhost:8003/api/listdriver';
-        $scope.startorderurl = 'http://localhost:8003/api/startorder';
-        $scope.updatetokenurl = 'http://localhost:8003/api/updatetoken';
-
-        $scope.assign = function(name, id) {
-            $scope.driver = name;
-            $scope.id = id;
-            $scope.startOrder();
-        };
-
-        $scope.getDriver = function() {
-            $http.post($scope.driverurl, {username: $scope.username, token: $scope.token, other_drivers: $scope.prefdriver, preferred_drivers: $scope.othdriver})
-                .then(function(response) {
-                    console.log(response.data);
-                    $scope.arrPreferredDriver = response.data.preferred_drivers;
-                    $scope.countarrpreferred = response.data.preferred_drivers.length;
-                    $scope.arrOtherDriver = response.data.other_drivers;
-                    $scope.countarrother = response.data.other_drivers.length;
-                    $scope.nextLoad();
-                }, function(response) {
-                    console.log("unable to perform post request");
-                    $scope.nextLoad();
-                });
-        };
-
-        $scope.startOrder = function() {
-            $http.post($scope.startorderurl, {username: $scope.username, token: $scope.token, tokenFCM: $scope.tokenFCM, driver: $scope.driver})
-                .then(function(response) {
-                    console.log(response.data);
-                    $location.url("http://localhost:8000/chat_passenger?picking_point=" + $scope.picking_point + "&destination=" + $scope.destination + "&preferred_driver=" + $scope.preferred_driver + "&driver_id=" + $scope.id + "&tokenFCM=" + $scope.tokenFCM);
-                }, function(response) {
-                    console.log("unable to perform post request");
-                });
-        };
-
-        $scope.cancelNextLoad = function() {
-            $timeout.cancel($scope.loadPromise);
-        };
-
-        $scope.nextLoad = function() {
-            $scope.cancelNextLoad();
-            $scope.loadPromise = $timeout($scope.checkOrder(),$scope.loadTime);
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('firebase-messaging-sw.js').then(function(registration) {
+                // Registration was successful
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }).catch(function(err) {
+                // registration failed :(
+                console.log('ServiceWorker registration failed: ', err);
+            });
         }
 
-        $scope.$on('$destroy', function() {
-            $scope.cancelNextLoad();
-        });
-
-        messaging.onTokenRefresh(function() {
-            messaging.getToken()
-                .then(function(refreshedToken) {
-                    console.log('Token refreshed.');
-                    $scope.setTokenSentToServer(false);
-                    $scope.sendTokenToServer(refreshedToken);
-                    $scope.retrieveToken();
-                })
-                .catch(function(err) {
-                    console.log('Unable to retrieve token ', err);
-                });
-        });
-
-        $scope.setTokenSentToServer = function(sent) {
-            $scope.tokensent = sent;
+        var config = {
+            apiKey: "AIzaSyBtisuPgPCI8Z54LrY9EhiMs1rfEb_mAXA",
+            authDomain: "tubes-3-wbd-c0ef6.firebaseapp.com",
+            databaseURL: "https://tubes-3-wbd-c0ef6.firebaseio.com",
+            projectId: "tubes-3-wbd-c0ef6",
+            storageBucket: "tubes-3-wbd-c0ef6.appspot.com",
+            messagingSenderId: "585220599787"
         };
+        firebase.initializeApp(config);
 
-        $scope.sendTokenToServer = function(currentToken) {
-            if (!$scope.tokensent) {
-                console.log('Sending token to server...');
-                $scope.tokenFCM = currentToken;
-                $http.post($scope.updatetokenurl, {username: $scope.username, tokenFCM: currentToken, token: $scope.token})
+        var app = angular.module('selectDriverApp', []);
+
+        app.controller('selectDriver', function($scope, $http, $location, $anchorScroll, $timeout) {
+            const messaging = firebase.messaging();
+
+            $scope.arrPreferredDriver = [];
+            $scope.arrOtherDriver = [];
+
+            $scope.countarrpreferred = 0;
+            $scope.countarrother = 0;
+            $scope.loadTime = 15000;
+            $scope.tokensent = false;
+
+            $scope.prefdriver = JSON.parse(document.getElementById("preferred").value);
+            $scope.othdriver = JSON.parse(document.getElementById("other").value);
+            $scope.token = document.getElementById("token").value;
+            $scope.username = document.getElementById("username").value;
+            $scope.picking_point = document.getElementById("picking_point").value;
+            $scope.destination = document.getElementById("destination").value;
+            $scope.preferred_driver = document.getElementById("preferred_driver").value;
+
+            $scope.driverurl = 'http://localhost:8003/api/listdriver';
+            $scope.startorderurl = 'http://localhost:8003/api/startchat';
+            $scope.updatetokenurl = 'http://localhost:8003/api/updatetoken';
+
+            $scope.getDriver = function() {
+                $http.post($scope.driverurl, {username: $scope.username, token: $scope.token, other_drivers: $scope.othdriver, preferred_driver: $scope.prefdriver})
+                    .then(function(response) {
+                        $scope.arrPreferredDriver = response.data.preferred_driver;
+                        $scope.countarrpreferred = response.data.preferred_driver.length;
+                        $scope.arrOtherDriver = response.data.other_drivers;
+                        $scope.countarrother = response.data.other_drivers.length;
+                        $scope.nextLoad();
+                    }, function(response) {
+                        console.log("unable to perform post request");
+                        $scope.nextLoad();
+                    });
+            };
+
+            $scope.startOrder = function(driver, id) {
+                $scope.id = id;
+                $http.post($scope.startorderurl, {username: $scope.username, token: $scope.token, tokenFCM: $scope.tokenFCM, driver: driver })
                     .then(function(response) {
                         console.log(response.data);
-                        $scope.setTokenSentToServer(true);
+                        window.location.href = "http://localhost:8000/chat_passenger?driver=" + driver + "&picking_point=" + $scope.picking_point + "&destination=" + $scope.destination + "&preferred_driver=" + $scope.preferred_driver + "&driver_id=" + $scope.id + "&tokenFCM=" + $scope.tokenFCM;
                     }, function(response) {
                         console.log("unable to perform post request");
                     });
-            } else {
-                console.log('Token already sent to server so won\'t send it again.');
+            };
+
+            $scope.cancelNextLoad = function() {
+                $timeout.cancel($scope.loadPromise);
+            };
+
+            $scope.nextLoad = function() {
+                $scope.cancelNextLoad();
+                $scope.loadPromise = $timeout($scope.getDriver(),$scope.loadTime);
             }
-        };
 
-        $scope.retrieveToken = function() {
-            messaging.getToken()
-                .then(function(currentToken) {
-                    if (currentToken) {
-                        console.log('your token is: ');
-                        console.log(currentToken);
-                        $scope.sendTokenToServer(currentToken);
-                    } else {
-                        console.log('No Instance ID token available. Request permission to generate one.');
+            $scope.$on('$destroy', function() {
+                $scope.cancelNextLoad();
+            });
+
+            messaging.onTokenRefresh(function() {
+                messaging.getToken()
+                    .then(function(refreshedToken) {
+                        console.log('Token refreshed.');
                         $scope.setTokenSentToServer(false);
-                    }
-                })
-                .catch(function(err) {
-                    console.log('An error occurred while retrieving token. ', err);
-                    $scope.setTokenSentToServer(false);
-                });
-        };
+                        $scope.sendTokenToServer(refreshedToken);
+                        $scope.retrieveToken();
+                    })
+                    .catch(function(err) {
+                        console.log('Unable to retrieve token ', err);
+                    });
+            });
 
-        $scope.requestPermission = function() {
-            console.log('Requesting permission...');
-            messaging.requestPermission()
-                .then(function() {
-                    console.log('Notification permission granted.');
-                    $scope.retrieveToken();
-                })
-                .catch(function(err) {
-                    console.log('Unable to get permission to notify.', err);
-                });
-        };
-    });
-</script>
+            $scope.setTokenSentToServer = function(sent) {
+                $scope.tokensent = sent;
+            };
+
+            $scope.sendTokenToServer = function(currentToken) {
+                if (!$scope.tokensent) {
+                    console.log('Sending token to server...');
+                    $scope.tokenFCM = currentToken;
+                    $http.post($scope.updatetokenurl, {username: $scope.username, tokenFCM: currentToken, token: $scope.token})
+                        .then(function(response) {
+                            console.log(response.data);
+                            $scope.setTokenSentToServer(true);
+                        }, function(response) {
+                            console.log("unable to perform post request");
+                        });
+                } else {
+                    console.log('Token already sent to server so won\'t send it again.');
+                }
+            };
+
+            $scope.retrieveToken = function() {
+                messaging.getToken()
+                    .then(function(currentToken) {
+                        if (currentToken) {
+                            console.log('your token is: ');
+                            console.log(currentToken);
+                            $scope.sendTokenToServer(currentToken);
+                        } else {
+                            console.log('No Instance ID token available. Request permission to generate one.');
+                            $scope.setTokenSentToServer(false);
+                        }
+                    })
+                    .catch(function(err) {
+                        console.log('An error occurred while retrieving token. ', err);
+                        $scope.setTokenSentToServer(false);
+                    });
+            };
+
+            $scope.requestPermission = function() {
+                console.log('Requesting permission...');
+                messaging.requestPermission()
+                    .then(function() {
+                        console.log('Notification permission granted.');
+                        $scope.retrieveToken();
+                    })
+                    .catch(function(err) {
+                        console.log('Unable to get permission to notify.', err);
+                    });
+            };
+        });
+    </script>
+</body>
 </html>
