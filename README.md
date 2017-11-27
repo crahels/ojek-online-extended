@@ -1,6 +1,6 @@
-# Tugas 2 IF3110 Pengembangan Aplikasi Berbasis Web
+# Tugas 3 IF3110 Pengembangan Aplikasi Berbasis Web
 
-Melakukan *upgrade* Website ojek online sederhana pada Tugas 1 dengan mengaplikasikan **arsitektur web service REST dan SOAP**.
+Melakukan upgrade Website ojek online sederhana pada Tugas 2 dengan mengaplikasikan ***cloud service* (Firebase Cloud Messaging) dan *framework* MEAN stack**.
 
 ## Memasang *development environment*
 
@@ -48,141 +48,156 @@ Or install using LAMPP: [https://www.apachefriends.org/faq_linux.html].
 
 ## Tujuan Pembuatan Tugas
 
-Diharapkan dengan tugas ini kami dapat mengerti:
-* Produce dan Consume REST API
-* Mengimplementasikan service Single Sign-On (SSO) sederhana
-* Produce dan Consume Web Services dengan protokol SOAP
-* Membuat web application dengan menggunakan JSP yang akan memanggil web services dengan SOAP (dengan JAX-WS) dan REST (dengan Servlet).
+Diharapkan dengan tugas ini Anda dapat mengerti:
+* MEAN stack (Mongo, Express, Angular, dan Node)
+* *Cloud service* Firebase Cloud Messaging (FCM) dan kegunaannya.
+* Web security terkait access token dan HTTP Headers.
 
 ## Arsitektur Umum Server
-![Gambar Arsitektur Umum](arsitektur_umum.png)
 
-Tugas 2 ini terdiri dari berberapa komponen yang harus dibuat:
-* `Web app`: digunakan untuk menangani HTTP request dari web browser dan menghasilkan HTTP response. Bagian yang diimplementasi dengan JSP ini juga bertugas untuk meng-generate tampilan web layaknya PHP. Bagian ini wajib dibuat dengan **Java + Java Server Pages**. Maka dari itu, konversi seluruh kode PHP pada tugas 1 menjadi kode JSP.
-* `Ojek Online Web Service`: digunakan sebagai interface yang dipanggil oleh aplikasi melalui protokol SOAP. melakukan query ke database, operasi insert, dan operasi update untuk entitas User, History, dan Preferred Locations. Webservice ini akan dipanggil oleh aplikasi dengan menggunakan SOAP. Webservice ini wajib dibuat dengan **JAX-WS dengan protokol SOAP atau Webservice lain** yang basisnya menggunakan **SOAP dan Java**.
-* `Identity service`: dipanggil oleh aplikasi untuk menerima email (sebagai username) dan password pengguna, dan menghasilkan *access token*. Identity Service juga dipanggil oleh *ojek online web service* untuk melakukan validasi terhadap *access token* yang sedang dipegang oleh *web app*. Service ini dibuat menggunakan REST. Namun, selain menghandle request secara REST biasa, Identity Service juga harus bisa **menerima SOAP request dan mengembalikan SOAP response**. Identity service ini wajib dibuat dengan menggunakan **Java Servlet**.
-* `Database`: basis data yang telah dibuat pada tugas 1 dipisahkan menjadi basis data khusus manajemen *account* (menyimpan username, password, dkk) dan basis data ojek online tanpa manajemen *account*. Basis data *account* digunakan secara khusus oleh Identity Service. **Ojek Online Web Service tidak boleh secara langsung mengakses basis data account untuk melakukan validasi token** (harus melalui Identity Service).
+![](img/arsitektur_umum.png)
+
+Tugas 3 ini terdiri dari komponen Tugas 2 dan tambahan yang harus dibuat:
+* `Pemanfaatan FCM`: Pengiriman pesan dari pelanggan ke driver atau sebaliknya dengan menggunakan layanan Firebase Cloud Messaging (FCM).
+* `Implementasi MEAN stack`: Membuat REST service untuk keperluan layanan chat memanfaatkan FCM menggunakan Node, Express dan Mongo, serta membuat halaman chat yang menggunakan Angular.
 
 ## Deskripsi Tugas
 
-Kami diminta untuk membuat ojek online sederhana seperti tugas 1.  Kebutuhan fungsional dan non-fungsional tugas yang harus dibuat adalah sebagai berikut.
+Kali ini, kami diminta untuk merubah sedikit fungsionalitas order yang sudah ada dan menambah fungsionalitas chat pada aplikasi yang telah kami buat pada tugas 2. Aplikasi ini akan menggunakan MEAN stack untuk halaman chat dan REST service, serta menggunakan layanan cloud Firebase Cloud Messaging sebagai media penyampaian pesan. Selain itu, kami juga diminta untuk mengimplementasikan beberapa fitur security. Spesifikasi untuk tugas ini adalah sebagai berikut:
 
-1. Halaman website yang memiliki tampilan serupa dengan tugas 1.
-2. Ojek Online web service dengan fungsi-fungsi sesuai kebutuhan sistem dalam mengakses data (kecuali login, register, dan logout).
-3. Identity service yang menangani manajemen *account* seperti login dan register, serta validasi access token.
-4. Fitur validasi email dan username pada halaman register tidak perlu diimplementasikan dengan menggunakan AJAX.
-5. Tidak perlu melakukan validasi javascript.
-6. Tampilan pada tugas ini **tidak akan dinilai**. Sangat disarankan untuk menggunakan asset dan tampilan dari tugas sebelumnya. Boleh menggunakan CSS framework seperti Bootstrap atau javascript library seperti jQuery.
-7. Tidak perlu memperhatikan aspek keamanan dan etika penyimpanan data.
+1. Halaman Order akan bergantung pada status pengguna, apakah driver atau bukan.
+2. Bila status pengguna merupakan driver maka pada halaman order akan ditampilkan fitur finding order dimana akan membuat driver visible ketika user ingin melakukan order pada halaman select driver. Apabila driver tidak melakukan finding order, maka driver tidak akan ditampilkan pada halaman select driver ketika pengguna non driver melakukan order.
+3. Pengguna dapat saling bertukar pesan dengan driver secara realtime di halaman order chat driver. Fitur ini harus diimplementasikan dengan MEAN stack, di mana fitur halmaman chat harus diimplementasikan dengan Angular dan fitur REST service diimplementasikan menggunakan Node, Express, dan Mongo.
+4. REST service yang akan menghubungkan client dan Firebase Cloud Messaging. Rincian service ini akan dijelaskan kemudian. Silahkan pelajari cara mendaftar ke layanan Firebase, dan cara membuat project baru.
+5. Pengguna harus login terlebih dahulu sebelum dapat melakukan chat. Silahkan cari cara untuk sharing session antara JSP dan MEAN. Sebagai contoh, anda dapat menggunakan cookie yang dapat diakses oleh keduanya.
+6. Pada halaman order select driver, aplikasi hanya menampilkan driver yang **sesuai requirement** saja (lihat poin 7). Ketika nama driver dipilih, maka akan muncul kotak chat antar pengguna non driver dan driver pada tab chat driver di halaman order.
+7. Requirement yang dimaksud ialah driver memiliki preferred location yang dituju pengguna, online, **sedang melakukan finding order**, dan tidak sedang mendapat order.
+8. Pengguna dengan IP address yang berbeda tidak dapat menggunakan access token yang sama.
+9. Pengguna dengan user-agent yang berbeda tidak dapat menggunakan access token yang sama. Dalam hal ini, user-agent yang dimaksud adalah web browser yang digunakan.
+10. Komponen yang harus digunakan pada AngularJS adalah:
+    * Data binding (ng-model directives)
+    * Controllers (ng-controllers)
+    * ng-repeat, untuk menampilkan list
+    * $http untuk AJAX request
+    * $scope untuk komunikasi data antara controller dengan view.
+    * ng-show dan ng-hide untuk menampilkan/menyembunyikan elemen
+11. Tidak perlu memperhatikan aspek keamanan dan etika dalam penyimpanan data.
 
-### Skenario
+### Rincian REST Service
+1. REST service untuk keperluan chatting **wajib** diimplementasikan dengan **Node dan Express**.
+2. REST service menangani hal-hal sebagai berikut.
+    * Memberikan daftar driver yang sesuai requirement (sesuai deskripsi tugas nomor 7)
+    * Menyimpan identitas (token FCM) dari masing-masing pengguna yang sedang online
+    * Menerima *request* dari user A untuk chat ke user B, lalu membuat *request* ke FCM untuk pengiriman pesan ke token FCM user B.
+    * Menyimpan ke basis data history chat dari seorang pemesan dan seorang driver. Misalkan A pernah memesan driver B. Jika suatu saat A akan memesan lagi ke driver B, maka kotak chat menampilkan chat yang dilakukan pada pemesanan sebelumnya.
+3. Untuk penyimpanan history chat, basis data yang digunakan **wajib Mongo**. Anda tidak diperkenankan menggunakan basis data yang lain, termasuk layanan Firebase Database.
 
-#### Login
-1. Pengguna mengakses halaman login : `/login.jsp` dan mengisi form.
-2. JSP akan membuka HTTP request ke Identity Service dengan body data username dan password.
-3. Identity service akan melakukan query ke DB untuk mengetahui apakah username dan password tersebut valid.
-4. Identity service akan memberikan HTTP response `access token` dan `expiry time` jika username dan password ada di dalam DB, atau error jika tidak ditemukan data.`expiry time` berdurasi 1 jam.
-5. Access token ini digunakan sebagai representasi state dari session pengguna dan harus dikirimkan ketika pengguna ingin melakukan semua aktivitas, kecuali login, register, dan logout. 
-6. Access token digenerate secara random.
-7. Access token dikirimkan bersama request dan dapat diambil untuk melakukan aktivitas.
+### Halaman Tambahan
+1. Halaman Order pada pengguna non driver, terdapat tambahan chat driver pada tahap ketiga
+2. Halaman Order pada pengguna driver
 
-#### Register
-1. Pengguna mengakses halaman register : `/register.jsp` dan mengisi form.
-2. JSP akan melakukan HTTP request ke Identity Service dengan body data yang dibutuhkan untuk registrasi.
-3. Identity service akan query DB untuk melakukan validasi bahwa email dan username belum pernah terdaftar sebelumnya.
-4. Identity service akan menambahkan user ke DB bila validasi berhasil, atau memberi HTTP response error jika username sudah ada atau confirm password salah.
-5. Identity service akan memberikan HTTP response `access token` dan `expiry time` dan user akan ter-login ke halaman profile bila user merupakan driver atau ke halaman order bila user bukan merupakan driver.
+### Rincian Arsitektur Aplikasi Chat
 
-#### Logout
-1. Pengguna menekan tombol logout.
-2. JSP akan melakukan HTTP request ke Identity Service dengan body data yang dibutuhkan.
-3. Identity service akan menghapus atau melakukan invalidasi terhadap access token yang diberikan.
-4. Identity service akan mengembalikan HTTP response berhasil.
-5. Halaman di-*redirect* ke halaman login.
+![](img/mekanisme_chat.png)
 
-#### Add Preferred Location, Make an Order, dll
-1. Pengguna mengakses halaman add preferred location : `/edit-preferred-location.jsp` dan mengisi form.
-2. JSP akan memanggil fungsi pada *ojek online web service* dengan SOAP : `addPreferredLocation(access_token, loc_name)`.
-3. Fungsi tersebut akan melakukan HTTP request ke Identity Service, untuk mengenali user dengan `access_token` yang diberikan.
-    - Jika `access_token` **kadaluarsa**, maka `addPreferredLocation` akan memberikan response expired token.
-    - Jika `access_token` **tidak valid**, maka `addPreferredLocation` akan memberikan response error ke JSP.
-    - Jika `access_token` **valid**, maka `addPreferredLocation` akan memasukan produk ke DB, dan memberikan response kesuksesan ke JSP.
-4. Jika `access_token` sudah kadaluarsa atau tidak valid (yang diketahui dari response error ojek online web service), sistem akan me-redirect user ke halaman login.
-5. Untuk make an order, get history, dan lainnya kira-kira memiliki mekanisme yang sama dengan add preferred locations di atas.
+Proses untuk komunikasi antar client adalah sebagai berikut:
+1. Ketika client dijalankan, client akan meminta token (token yang berbeda dengan token untuk authentication dari Identity Service) dari FCM.
+2. FCM mengirimkan token ke client.
+3. Setelah token diterima, client akan mengirim token serta identitas dari client (nama/email) ke chat server. Identitas client digunakan untuk mengidentifikasi kepemilikan token.
+4. Untuk mengirim pesan kepada client lain, client pertama mengirimkan pesan yang berisi identitas pengirim, identitas tujuan, dan isi pesan ke chat server.
+5. Chat server kemudian akan mencari token yang terkait dengan identitas tujuan.
+6. Chat server lalu mengirim request ke FCM untuk mengirimkan pesan kepada client dangan token yang terkait.
+7. FCM mengirimkan pesan kepada tujuan.
 
-### *Auto-renew* access token
+### Asumsi yang Digunakan
+1. Pada tugas ini, diasumsikan kedua client sedang aktif. Aplikasi hanya akan dijalankan pada localhost, sehingga memerlukan 2 browser yang berbeda untuk mensimulasikan client yang berbeda. Aplikasi berjalan pada localhost karena browser mensyaratkan sumber aplikasi harus aman untuk operasi-operasi yang digunakan pada aplikasi ini. Localhost termasuk lokasi yang diperbolehkan oleh browser.
+2. Kedua browser tersebut harus dalam keadaan aktif dan terfokus, serta tidak terminimize. Hal ini karena cara kerja service worker, yang hanya dapat memberikan notifikasi, dan tidak dapat melakukan manipulasi halaman apabila web browser tidak sedang terfokus ketika pesan datang.
+Selain itu, seorang pengguna hanya dapat chatting dengan 1 pengguna lain dalam 1 waktu, sehingga hanya 1 kotak chat yang ditampilkan.
+3. Driver hanya dapat menerima satu order dari satu user pada satu waktu.
 
-Pada spesifikasi asli, *access token* hanya berlaku selama periode waktu tertentu sebelum *expiry time* yang cukup singkat. Hal ini dimaksudkan agar apabila *access token* berhasil diperoleh oleh orang lain selain pengguna yang sebenarnya (*attacker*), dampaknya seminimum mungkin karena terbatas waktu. Akan tetapi, hal ini tentu saja tidak praktis bagi pengguna karena akan terlogout setiap kali *expiry time* habis.
+### Skenario Chatting
+Skenario penggunaan aplikasi adalah sebagai berikut.
+Misal pengguna A adalah non driver, dan pengguna B adalah driver.
+1. A dan B login untuk masuk ke aplikasi.
+2. B melakukan finding order pada halaman Order. A memasuki halaman Order.
+3. A melakukan order dan memilih driver yang sedang online dan tersedia (driver B).
+4. Kotak chat akan muncul di halaman Chat Driver pada layar A. Kotak chat juga akan muncul pada halaman Order pada B.
+5. A mengetikkan pesan, dan menekan tombol kirim.
+6. Pesan dikirim ke B melalui chat server dan FCM.
+7. Ketika pesan sudah diterima di B, kotak chat pada layar B akan muncul.
+8. B dapat membalas chat dari A.
+9. Apabila A sudah melakukan submit rating maka chatbox pada B akan hilang dan kembali menampilkan halaman finding order.
 
-Untuk mengatasi hal tersebut, digunakan sistem *refresh token* untuk me-*renew* *access token*. Pada saat login, identity service akan memberikan sebuah *refresh token* kepada web app (JSP). Setiap kali web app gagal membaca data dari web service (SOAP) karena *access token*-nya *expired*, maka web app akan meminta *access token* baru kepada identity service dengan menggunakan *refresh token* yang dimilikinya.
+### Tampilan Program
+Halaman Order pada Driver
 
-Keuntungan dari menggunakan metode ini adalah bahwa pengguna tidak harus login menggunakan username dan password terus-menerus, dan dengan demikian mengurangi resiko password tersadap oleh orang lain. *Refresh token* juga lebih aman karena hanya diketahui oleh identity service dan web app saja.
+![](img/driver_halaman_order.png)
 
-### Penjelasan
+Pada saat dilakukan "Find Order", maka akan dilakukan pemanggilan terhadap api findorder yang disediakan pada chat service untuk mengubah status seorang driver menjadi online. Apabila api findorder berhasil menerima request ini maka akan dikembalikan status OK. 
 
-1. Basis data dari sistem yang dibuat.
-	* Terdapat 2 basis data : Database Ojek Online & Database Account
-	* Database Ojek Online diakses melalui Ojek Online Web Service, dan Database Account diakses melalui Identity Service
-	* Database Ojek Online terdiri atas 3 tabel : *orders*, *users*, dan *user_preferred_locations*
-	* Database Account terdiri atas 2 tabel : *session*, dan *users*
-2. Konsep shared session dengan menggunakan REST.
-	* Ketika login, pengguna akan digenerate dan diberikan sebuah *access_token* untuk mevalidasi aktivitas-aktivitas selanjutnya.
-	* Ketika pengguna akan melakukan sebuah aktivitas (misal: make an order), *web service* akan memanggil *identity service* untuk melakukan validasi terhadap *access token* yang sedang dipegang oleh *web app*. 
-	* *Identity service* akan mengembalikan status token yang diterima, yaitu *valid*, *invalid*, atau *expired*.
-	* Apabila token tersebut *invalid*, pengguna akan di-*redirect* ke halaman login.
-	* Apabila token *valid*, maka pengguna dapat melanjutkan aktivitasnya tersebut.
-	* Apabila token *expired*, token akan di-*renew* dan dapat melanjutkan aktivitasnya tersebut.
-3. Pembangkitan token dan expire time pada sistem yang anda buat.
-	* Token di generate secara random dengan menggunakan SecureRandom (SHA1PRNG).
-	* Token memiliki *expire time* selama 1 jam.
-	* Apabila *identity service* menerima token yang *expired*, maka access token akan di-*renew* (lihat bagian *auto-renew* access token diatas)
-4. Kelebihan dan kelemahan dari arsitektur aplikasi tugas ini, dibandingkan dengan aplikasi monolitik (login, CRUD DB, dll jadi dalam satu aplikasi)
-	Arsitektur aplikasi tugas ini menerapkan arsitektur *microservice*. Penerapan ini merupakan pembangunan aplikasi dengan memecah-mecahnya menjadi bagian-bagian kecil, yang juga disebut sebagai *service*.
 
-	Dalam *microservice*, setiap *service* dapat dikembangkan dan dites masing-masing. Antara *service* yang satu dengan yang lain berkomunikasi menggunakan sebuah protokol seperti SOAP dan REST (seperti yang telah dibuat dalam aplikasi ini).
-	Setiap *service* jika diinginkan dapat dikembangkan dalam bahasa yang berbeda-beda. Selain itu, *microservice* juga mudah untuk dikembangkan lebih besar jika dibutuhkan.
+Halaman Order pada Driver Ketika Melakukan Finding Order
 
-	Walaupun begitu, *microservice* juga memiliki kekurangan dibandingkan dengan arsitektur *monolithic*.
-	Pengembangan *microservice* tidaklah sederhana. *Microservice* memiliki banyak operasi, membutuhkan skill DevOps yang baik, dan susah untuk di-*manage* karena sistem yang terdistribusi.
+![](img/driver_finding_order.png)
+
+Pada saat dilakukan "Finding Order", akan dilakukan pemanggilan terhadap api checkorder secara berkala untuk mendeteksi apabila terdapat passenger yang memilih driver yang bersangkutan. Apabila seorang passenger memilih driver tersebut, maka akan dikembalikan username passenger yang bersangkutan. Jika tidak, maka akan dikembalikan nilai null. Pada saat button "Cancel" ditekan sebelum terdapat passenger yang memilih driver tersebut, maka akan dipanggil api cancelfindorder untuk mengubah status driver menjadi offline sehingga driver menjadi tidak visible pada passenger.
+
+
+Halaman Order pada Driver Ketika Mendapat Order
+
+![](img/driver_got_order.png)
+
+Pada saat memasuki halaman "Chat Driver", client akan melakukan request pada FCM untuk mendapatkan token dan akan memanggil api update token untuk mengirimkan token tersebut ke server. Server akan menyimpan token FCM untuk driver tersebut untuk keperluan bertukar pesan antara driver dengan passenger. Selain itu, untuk menampilkan chat history, akan dipanggil api gethistory yang akan memberikan response berupa array of chat antar driver dan passenger. Pada saat driver mengirim pesan kepada passenger, pesan akan dipush ke array untuk ditampilkan pada layar. Selain itu, juga akan dilakukan pemanggilan terhadap api sendchat agar server dapat menyimpan history chat tersebut. 
+
+
+Halaman Order pada Pengguna, Chat Driver
+
+![](img/pengguna_chat_driver.png)
+
+Pada saat memasuki halaman "Order Select Driver", client akan melakukan request pada FCM untuk mendapatkan token dan akan memanggil api update token untuk mengirimkan token tersebut ke server. Server akan menyimpan token FCM untuk passenger tersebut untuk keperluan bertukar pesan antara driver dengan passenger. Selain itu, untuk menampilkan chat history akan dipanggil api gethistory yang akan memberikan response berupa array of chat antar driver dan passenger. Pada saat passenger mengirim pesan kepada driver, pesan akan dipush ke array untuk ditampilkan pada layar. Selain itu, juga akan dilakukan pemanggilan terhadap api sendchat agar server dapat menyimpan history chat tersebut. 
+
+Perlu diperhatikan bahwa chat yang dikirim oleh user yang sedang login berada disisi sebelah kanan dan lawan chatnya lain di sisi sebelah kirim. Isi chat jga harus ditampilkan sesuai urutan waktu diterima (paling atas adalah chat paling lama dan makin ke bawah chat makin baru).
+
+
+Halaman Complete Order pada Pengguna
+
+![](img/complete_order_pengguna.png)
+
+Pada saat "Complete Order" ditekan, api endorder akan dipanggil untuk mengubah status passenger dan status driver pada database menjadi offline.
 
 ### Pembagian Tugas
 
-*REST:*
-1. Generate token - 13515004
-2. Validasi token - 13515004
-3. Login - 13515004
-4. Register - 13515004
-5. Logout - 13515001
-6. Auto-renew access token (bonus) - 13515001
+*Chat App Front-end :*
+1. Send Chat : 13515001 
+2. Find Order : 13515001
+3. Get History : 13515001
+4. Save Chat : 13515073
+5. Update Token : 13515073
+6. Cancel Find Order : 13515073
+7. Check Order : 13515073
+8. Check End Order : 13515124
+9. Start Order : 13515124
+10. Order Select Driver : 13515124
+11. End Order : 13515124
+12. Request Token from FCM : 13515001, 13515124  
 
-*SOAP:*
-1. Get profile - 13515004
-2. Edit profile - 13515001, 13515079
-3. Add preferred location - 13515001
-4. Edit preferred location - 13515001
-5. Delete preferred location - 13515001
-6. Get preferred driver - 13515004
-7. Get driver - 13515004
-8. Complete order - 13515004
-9. Get previous order (history penumpang) - 13515079
-10. Hide previous order - 13515079
-11. Get history driver - 13515079
-12. Hide history driver - 13515079
+*Chat REST Service :*  
+1. Send Chat : 13515001  
+2. Find Order : 13515001
+3. Get History : 13515001
+4. Save Chat : 13515073
+5. Update Token : 13515073
+6. Cancel Find Order : 13515073
+7. Check Order : 13515073
+8. Check End Order : 13515124
+9. Start Order : 13515124
+10. Order Select Driver : 13515124
+11. End Order : 13515124
+12. Send Message with Token FCM : 13515073
 
-*Web app (JSP):*
-1. Login - 13515004
-2. Register - 13515004
-3. Header - 13515004
-4. Profile - 13515004
-5. Edit Profile - 13515001, 13515079
-6. Edit Preferred Location - 13515001
-7. Order Header - 13515004
-8. Order Ojek - 13515004
-9. Select Driver - 13515004
-10. Complete Order - 13515004
-11. History Header - 13515079
-12. History Penumpang - 13515079
-13. History Driver - 13515079
+*Fitur security (IP, User-agent) :*
+1. Change Token Structure : 13515001
+2. Validate Token : 13515001
 
 Lain-lain:
 1. Setup *project* dan Docker - 13515001
@@ -198,10 +213,10 @@ Lain-lain:
 
 ## About
 
-**Kelompok 1 K-01 / Sceptre**
+**Kelompok 1 K-01 / Silmarillion**
 
 - 13515001 - Jonathan Christopher
-- 13515004 - Jordhy Fernando
-- 13515079 - Nicholas Thie
+- 13515073 - Ray Andrew
+- 13515124 - Rachel Sidney Devianti
 
 Dosen: Yudistira Dwi Wardhana | Riza Satria Perdana | Muhammad Zuhri Catur Candra
