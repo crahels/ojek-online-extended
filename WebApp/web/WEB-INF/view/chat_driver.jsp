@@ -126,6 +126,7 @@
                         $scope.chathistory.push(response.data);
                         document.getElementById("conv").value = "";
                     }, function(response) {
+                        window.location.href = "/login";
                         console.log("unable to perform post request");
                     });
             } else {
@@ -145,6 +146,7 @@
                     }
                 }, function(response) {
                     console.log("unable to perform post request");
+                    window.location.href = "/login";
                     $scope.nextLoadEndOrder();
                 });
         };
@@ -163,6 +165,7 @@
                     $scope.findingorder = 1;
                 }, function(response) {
                     console.log("unable to perform post request");
+                    window.location.href = "/login";
                 });
         };
 
@@ -177,6 +180,7 @@
                     }
                 }, function(response) {
                     console.log("unable to perform post request");
+                    window.location.href = "/login";
                 });
         };
 
@@ -197,6 +201,7 @@
                     }
                 }, function(response) {
                     console.log("unable to perform get request");
+                    window.location.href = "/login";
                     if (!$scope.cancelorder) {
                         $scope.nextLoad();
                     }
@@ -214,9 +219,11 @@
                             });
                         }, function(res) {
                             console.log("Unable to perform post request");
+                            window.location.href = "/login";
                         });
                 }, function(response) {
                     console.log("Unable to perform post request");
+                    window.location.href = "/login";
                 });
         };
 
@@ -278,6 +285,7 @@
                         $scope.setTokenSentToServer(true);
                     }, function(response) {
                         console.log("unable to perform post request");
+                        window.location.href = "/login";
                     });
             } else {
                 console.log('Token already sent to server so won\'t send it again.');

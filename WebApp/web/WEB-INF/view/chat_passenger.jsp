@@ -117,6 +117,7 @@
                         document.getElementById("conv").value = "";
                     }, function(response) {
                         console.log("unable to perform post request");
+                        window.location.href = "/login";
                     });
                 } else {
                     alert('Input cannot be blank.');
@@ -142,6 +143,7 @@
                             });
                     }, function(response) {
                         console.log("Unable to perform post request");
+                        window.location.href = "/login";
                     });
             };
 
@@ -186,6 +188,7 @@
                             $scope.setTokenSentToServer(true);
                         }, function(response) {
                             console.log("unable to perform post request");
+                            window.location.href = "/login";
                         });
                 } else {
                     console.log('Token already sent to server so won\'t send it again.');

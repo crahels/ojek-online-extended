@@ -1,11 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Jordhy
-  Date: 11/6/2017
-  Time: 7:16 PM
-  To change this template use File | Settings | File Templates.
---%>
-
 <%@ page import="com.sceptre.projek.webapp.model.User" %>
 <%@ page import="java.util.List" %>
 
@@ -195,6 +187,7 @@
                         $scope.nextLoad();
                     }, function(response) {
                         console.log("unable to perform post request");
+                        window.location.href = "/login";
                         $scope.nextLoad();
                     });
             };
@@ -207,6 +200,7 @@
                         window.location.href = "http://localhost:8000/chat_passenger?driver=" + driver + "&picking_point=" + $scope.picking_point + "&destination=" + $scope.destination + "&preferred_driver=" + $scope.preferred_driver + "&driver_id=" + $scope.id + "&tokenFCM=" + $scope.tokenFCM;
                     }, function(response) {
                         console.log("unable to perform post request");
+                        window.location.href = "/login";
                     });
             };
 

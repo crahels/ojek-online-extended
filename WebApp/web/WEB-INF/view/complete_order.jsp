@@ -97,13 +97,15 @@
                         },
                         data: {picking_point: $scope.picking_point, destination: $scope.destination, driver_id: $scope.driver_id, star: $scope.star, comment: $scope.comment}
                     }).then(function(res) {
-                        window.location.href = 'http://localhost:8000/order'
+                        window.location.href = 'http://localhost:8000/order';
                         return true;
                     }, function(res) {
                         console.log("Unable to perform post request");
+                        window.location.href = "/login";
                     })
                 }, function(response) {
                     console.log("Unable to perform post request");
+                    window.location.href = "/login";
                 });
         };
     });
