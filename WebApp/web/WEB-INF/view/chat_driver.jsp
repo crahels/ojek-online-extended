@@ -107,7 +107,7 @@
         $scope.to = "";
 
         $scope.usernamepassenger = "";
-        $scope.loadTime = 15000;
+        $scope.loadTime = 1000;
 
         $scope.findorderurl = 'http://localhost:8003/api/findorder';
         $scope.cancelfindorderurl = 'http://localhost:8003/api/cancelorder';
