@@ -12,6 +12,8 @@
           <element id="library" level="project" name="json-20140107" />
           <element id="library" level="project" name="JAX-WS-Glassfish / JAX-WS 2.2 RI / Metro 1.X / JWSDP 2.2" />
           <element id="library" level="project" name="lib" />
+          <element id="library" level="project" name="lib2" />
+          <element id="library" level="project" name="lib1" />
         </element>
       </element>
     </root>

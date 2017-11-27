@@ -24,16 +24,16 @@ public class OrderSelectDriverServlet extends HttpServlet {
                 String pickingPoint = request.getParameter("picking_point");
                 String destination = request.getParameter("destination");
                 String preferredDriver = request.getParameter("preferred_driver");
-                String JSONResponse = orderWS.getDrivers(access_token, pickingPoint, destination, preferredDriver);
+                String JSONResponse = orderWS.getDrivers(access_token, TokenValidator.getIdentifier(request), pickingPoint, destination, preferredDriver);
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject);
                 if (authResult == WSClient.AUTH_RETRY) {
                     doGet(request, response);
                 } else if (authResult == WSClient.AUTH_OK) {
-                    List<User> preferredDrivers = User.extractDrivers(jsonObject.getJSONArray("preferred_drivers"));
-                    List<User> otherDrivers = User.extractDrivers(jsonObject.getJSONArray("other_drivers"));
-                    request.setAttribute("preferred_drivers", preferredDrivers);
-                    request.setAttribute("other_drivers", otherDrivers);
+                    // List<User> preferredDrivers = User.extractDrivers(jsonObject.getJSONArray("preferred_drivers"));
+                    // List<User> otherDrivers = User.extractDrivers(jsonObject.getJSONArray("other_drivers"));
+                    request.setAttribute("preferred_drivers", jsonObject.getJSONArray("preferred_drivers"));
+                    request.setAttribute("other_drivers", jsonObject.getJSONArray("other_drivers"));
                     RequestDispatcher rs = request.getRequestDispatcher("/WEB-INF/view/order_select_driver.jsp");
                     rs.forward(request, response);
                 }

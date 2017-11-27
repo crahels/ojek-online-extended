@@ -1,4 +1,4 @@
-package com.sceptre.projek.webservice;
+package com.sceptre.projek.webapp.servlet;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;

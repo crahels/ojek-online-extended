@@ -11,8 +11,8 @@ import java.sql.Statement;
 public class LocationWSImpl implements LocationWS {
 
     @Override
-    public String addPreferredLocation(String access_token, String loc_name) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String addPreferredLocation(String access_token, String identifier, String loc_name) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
@@ -56,8 +56,8 @@ public class LocationWSImpl implements LocationWS {
     }
 
     @Override
-    public String editPreferredLocation(String access_token, String loc_name, String new_loc_name) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String editPreferredLocation(String access_token, String identifier, String loc_name, String new_loc_name) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
@@ -102,8 +102,8 @@ public class LocationWSImpl implements LocationWS {
 
 
     @Override
-    public String deletePreferredLocation(String access_token, String loc_name) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String deletePreferredLocation(String access_token, String identifier, String loc_name) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;

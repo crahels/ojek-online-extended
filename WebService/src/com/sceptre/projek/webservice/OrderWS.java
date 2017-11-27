@@ -18,7 +18,7 @@ public interface OrderWS {
      * @return List of drivers in JSON format.
      */
     @WebMethod
-    String getDrivers(String access_token, String pickingPoint, String destination, String driverName);
+    String getDrivers(String access_token, String identifier, String pickingPoint, String destination, String driverName);
 
     /**
      * Gets driver (name and username) from its given id.
@@ -27,7 +27,7 @@ public interface OrderWS {
      * @return Driver (name and username) in JSON format.
      */
     @WebMethod
-    String getDriver(String access_token, int driverId);
+    String getDriver(String access_token, String identifier, int driverId);
 
     /**
      * Completes an order and saves it to database.
@@ -40,17 +40,17 @@ public interface OrderWS {
      * @return Message (sucess / invalid_token / token_expired) in JSON format.
      */
     @WebMethod
-    String completeOrder(String access_token, int driverId, String pickingPoint, String destination, int rating, String comment);
+    String completeOrder(String access_token, String identifier, int driverId, String pickingPoint, String destination, int rating, String comment);
 
     @WebMethod
-    String getCustomerOrders(String access_token);
+    String getCustomerOrders(String access_token, String identifier);
 
     @WebMethod
-    String getDriverOrders(String access_token);
+    String getDriverOrders(String access_token, String identifier);
 
     @WebMethod
-    String hideCustomer(String access_token, int orderId);
+    String hideCustomer(String access_token, String identifier, int orderId);
 
     @WebMethod
-    String hideDriver(String access_token, int orderId);
+    String hideDriver(String access_token, String identifier, int orderId);
 }

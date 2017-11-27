@@ -24,7 +24,7 @@ public class HistoryServlet extends HttpServlet {
             if (orderWS != null) {
                 String access_token = (String) request.getSession().getAttribute("access_token");
 
-                String JSONResponse = orderWS.getCustomerOrders(access_token);
+                String JSONResponse = orderWS.getCustomerOrders(access_token, TokenValidator.getIdentifier(request));
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject);
                 if (authResult == WSClient.AUTH_RETRY) {
@@ -59,7 +59,7 @@ public class HistoryServlet extends HttpServlet {
             if (orderWS != null) {
                 String access_token = (String) request.getSession().getAttribute("access_token");
                 int orderId = Integer.parseInt(request.getParameter("order_id"));
-                String JSONResponse = orderWS.hideCustomer(access_token, orderId);
+                String JSONResponse = orderWS.hideCustomer(access_token, TokenValidator.getIdentifier(request), orderId);
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject);
                 if (authResult == WSClient.AUTH_RETRY) {

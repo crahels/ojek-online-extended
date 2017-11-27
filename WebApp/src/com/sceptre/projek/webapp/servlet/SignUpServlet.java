@@ -21,7 +21,12 @@ import java.util.Map;
 public class SignUpServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getSession().getAttribute("access_token") != null) {
-            response.sendRedirect("profile");
+            if (Boolean.parseBoolean(request.getSession().getAttribute("is_driver").toString())) {
+                response.sendRedirect("chat_driver");
+            } else {
+               response.sendRedirect("order");
+            }
+            // response.sendRedirect("profile");
         } else {
             RequestDispatcher rs = request.getRequestDispatcher("/WEB-INF/view/signup.jsp");
             rs.forward(request, response);
@@ -49,16 +54,17 @@ public class SignUpServlet extends HttpServlet {
             String access_token = jsonObject.getString("access_token");
             Timestamp expiry_time = Timestamp.valueOf(jsonObject.getString("expiry_time"));
 
-            signUp(access_token, name, username, email, phoneNumber, isDriver);
+            signUp(access_token, TokenValidator.getIdentifier(request), name, username, email, phoneNumber, isDriver);
 
             HttpSession session = request.getSession();
             session.setAttribute("access_token", access_token);
             session.setAttribute("refresh_token", access_token);
             session.setAttribute("expiry_time", expiry_time);
             session.setAttribute("username", username);
+            session.setAttribute("is_driver", isDriver);
 
             if (isDriver) {
-                response.sendRedirect("profile");
+                response.sendRedirect("chat_driver");
             } else {
                 response.sendRedirect("order");
             }
@@ -88,10 +94,10 @@ public class SignUpServlet extends HttpServlet {
      * @param phoneNumber  Phone number of the user.
      * @param isDriver     Driver status.
      */
-    private void signUp(String access_token, String name, String username, String email, String phoneNumber, boolean isDriver) {
+    private void signUp(String access_token, String identifier, String name, String username, String email, String phoneNumber, boolean isDriver) {
         UserWS userWS = WSClient.getUserWS();
         if (userWS != null) {
-            userWS.store(access_token, name, username, email, phoneNumber, isDriver);
+            userWS.store(access_token, identifier, name, username, email, phoneNumber, isDriver);
         }
     }
 }

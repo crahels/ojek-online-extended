@@ -15,6 +15,19 @@
     }
   },
 
+  "fcm": {
+    "type": "service_account",
+    "project_id": "tubes-3-wbd-c0ef6",
+    "private_key_id": "69e25ac25c2e2e9390eed226c0163473430eb230",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDXkzIDiramp5JV\nU0O1l7V77CeKTenDxgkTxXQD8+L9RM5NRUlfloWVw5zUeb2dJ+dW6HFtH8ZqpIUL\nO37PwxRBukGGx0PFk3fs5l7QHh71r2PQBQYq1jJqgwOLGgcZKcQ4ZeDUZ3q386sV\nk2Qz1XgoMwKG5pEhdQdvBCFsgmVqXnRXhZcDGr7shJALW7Dt9/nGOaO02xYoMzgR\nZ+JiYudEwsbA6NhIFZmi26rjQ8ajtnfPnm3vEyKnbcTVroaL4g0baMxKNQzK7FWh\nIQGAWmhby8EoREwmOVbIh9ItoK9myirhWd6dIBv2H9Fq/zBWnDjazim+eBq+rrl1\ntFTLi6sTAgMBAAECggEAPt8Ji5nlijY+Cc+GZEwyHEm0AHSXtEap+A+ytcJn1Zi/\nGC8YZp3mKNcLgrZctBxirmiNSBenzQtdV/jKk7pfyomROcccv18yby+CwGzAd8Pm\nttD4Sv78Zi7+lg+JuW+CcDZaO2hQlJymrVy2sR1VdVfnKUPOWPUiLWEFhHmFLV+E\nvyRIPmCUDabFUE0gHcjN1BPuRYepo1qf4nj4C6DUCQpRVCGFRgh1ylhxbEnW4uP2\nHbhL77aRT5LiqSYDYHw9viNJHDc1lI1wTFlZ9ld1HvKvZxSB+AuvxF5z1by26PT4\nzROlr7LNUNe35k04ld4xk1Za+3+92gGzMslaQBLWTQKBgQDvHQIL4r5ESQW0ZMKc\nlaMngUz/nq6DvFVGZ1+wIco4nRCGCPa/6NGznyND34EXFNzh6Mc3hTGuDi5h4sFT\ns/8Dp/R3crMGfnGmpUvEbQtRHgUmxti+reg/nuco3yEQSseamOwxS6VdRzRoNv1w\ntOQ06NT5VjvP7NeZCsCa+GWGHQKBgQDmzKG6RtZDELJPbnIgBNKlkA82SSoqYQqW\nr7TJdXun7S9FaDHv+5fTXBhpTwCtEgXfJIGeQS8XcZfO9H975i0kHNtz42rUWaiJ\n7R/smohV+oI3idLG6iyfPCJ7x2wy33IFthi18iS5SlbdeuXfAwwCBdZOxBD1gxW4\nHxU5FD9u7wKBgHMy0IeVaAFSBPOSD8iMtxwTSVtlwcIp/BN9PjaHMPvxf8Jzkx2G\nN3GIW98ZUQIjxP75vPDctMCciHAUZPvEnjnOsxLRKbsZM/wLauNpfahJBEZYSpgj\nBN+R2OByD2XgASZUQobFYRf9dBw5UgT4wXFUMzck+pAEFSLgcUa4IYFpAoGABod3\nc8uZOCB6yuB2/gzk4KYoqAJ93OEN6aFi3egi7Wc6VR5Te1SEwQfz8Na5UCwYWm2v\n9QgnCuS9xK8KBDlIwaLHWonudb9rkytQIeNlQ/loQaX2foYVaRPMbfAAUZgco6i5\nHjyRaWR+/JkDc8GkT1JW87d8O1XQAXtvoEPAX6UCgYByTRqiUUYOy7+Wl/rSfN0p\nZwYvuWdvSyIpzLI5nwXzgtjY7gyeAYYbAODPT/KRxAJqQZZ/ubVPXXr3PlUGjSEQ\nn176Q0optjxedal06g8sAVFO/KZSByNrlAk7s7qgAxwA+4dfKRWTQIyQLZS+rViQ\nuGsjL/js2BfQ29D8oq3+9w==\n-----END PRIVATE KEY-----\n",
+    "client_email": "firebase-adminsdk-0tair@tubes-3-wbd-c0ef6.iam.gserviceaccount.com",
+    "client_id": "101336504576349318269",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://accounts.google.com/o/oauth2/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-0tair%40tubes-3-wbd-c0ef6.iam.gserviceaccount.com"
+  },
+  
   "routePrefix": "/api",
   "registrationKey": "[chat_service_registration_key]"
 }

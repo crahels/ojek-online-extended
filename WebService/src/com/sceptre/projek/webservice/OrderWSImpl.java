@@ -22,8 +22,8 @@ public class OrderWSImpl implements OrderWS{
      * @return List of drivers in JSON format.
      */
     @Override
-    public String getDrivers(String access_token, String pickingPoint, String destination, String driverName) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String getDrivers(String access_token, String identifier, String pickingPoint, String destination, String driverName) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
@@ -32,7 +32,7 @@ public class OrderWSImpl implements OrderWS{
             try{
                 conn = DatabaseManager.createConnection();
                 statement = conn.createStatement();
-                String query = "SELECT users.id, name, profile_picture, COUNT(rating) AS votes, AVG(rating) AS ratings " +
+                String query = "SELECT users.id, username, name, profile_picture, COUNT(rating) AS votes, AVG(rating) AS ratings " +
                         "FROM users INNER JOIN user_preferred_locations ON users.id = user_preferred_locations.user_id " +
                         "LEFT JOIN orders ON orders.driver_id= users.id " +
                         "WHERE username <> '" +  username + "' AND UPPER(name)=UPPER('" + driverName +"') AND is_driver=true " +
@@ -42,7 +42,7 @@ public class OrderWSImpl implements OrderWS{
 
                 JSONResponse.put("preferred_drivers", extractDrivers(statement.executeQuery(query)));
 
-                query = "SELECT users.id, name, profile_picture, COUNT(rating) AS votes, AVG(rating) AS ratings " +
+                query = "SELECT users.id, username, name, profile_picture, COUNT(rating) AS votes, AVG(rating) AS ratings " +
                         "FROM users INNER JOIN user_preferred_locations ON users.id = user_preferred_locations.user_id " +
                         "LEFT JOIN orders ON orders.driver_id= users.id " +
                         "WHERE username <> '" +  username + "' AND UPPER(name) <> UPPER('" + driverName +"') AND is_driver=true " +
@@ -84,6 +84,7 @@ public class OrderWSImpl implements OrderWS{
             while(rs.next()) {
                 JSONObject driver = new JSONObject();
                 driver.put("id", rs.getInt("id"));
+                driver.put("username", rs.getString("username"));
                 driver.put("name", rs.getString("name"));
                 driver.put("profile_picture", rs.getString("profile_picture"));
                 driver.put("votes", rs.getInt("votes"));
@@ -104,8 +105,8 @@ public class OrderWSImpl implements OrderWS{
      * @return Driver (name and username) in JSON format.
      */
     @Override
-    public String getDriver(String access_token, int driverId) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String getDriver(String access_token, String identifier, int driverId) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
@@ -163,8 +164,8 @@ public class OrderWSImpl implements OrderWS{
      * @return Message (sucess / invalid_token / token_expired) in JSON format.
      */
     @Override
-    public String completeOrder(String access_token, int driverId, String pickingPoint, String destination, int rating, String comment) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String completeOrder(String access_token, String identifier, int driverId, String pickingPoint, String destination, int rating, String comment) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
@@ -214,8 +215,8 @@ public class OrderWSImpl implements OrderWS{
     }
 
     @Override
-    public String getCustomerOrders(String access_token) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String getCustomerOrders(String access_token, String identifier) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
@@ -259,8 +260,8 @@ public class OrderWSImpl implements OrderWS{
     }
 
     @Override
-    public String getDriverOrders(String access_token) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String getDriverOrders(String access_token, String identifier) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
@@ -359,8 +360,8 @@ public class OrderWSImpl implements OrderWS{
     }
 
     @Override
-    public String hideCustomer(String access_token, int orderId) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String hideCustomer(String access_token, String identifier, int orderId) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
@@ -401,8 +402,8 @@ public class OrderWSImpl implements OrderWS{
     }
 
     @Override
-    public String hideDriver(String access_token, int orderId) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String hideDriver(String access_token, String identifier, int orderId) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;

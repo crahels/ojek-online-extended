@@ -25,7 +25,7 @@ public class EditProfileServlet extends HttpServlet {
         if (request.getSession().getAttribute("access_token") != null) {
             UserWS userWS = WSClient.getUserWS();
             if (userWS != null) {
-                String JSONResponse = userWS.getUserDetails((String) request.getSession().getAttribute("access_token"));
+                String JSONResponse = userWS.getUserDetails((String) request.getSession().getAttribute("access_token"), TokenValidator.getIdentifier(request));
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject);
                 if (authResult == WSClient.AUTH_RETRY) {
@@ -73,7 +73,7 @@ public class EditProfileServlet extends HttpServlet {
                 boolean is_driver = isDriverPart != null;
 
                 // Update profile to database
-                String JSONResponse = userWS.update((String) request.getSession().getAttribute("access_token"), name, phone, is_driver, profilePictureBase64);
+                String JSONResponse = userWS.update((String) request.getSession().getAttribute("access_token"), TokenValidator.getIdentifier(request), name, phone, is_driver, profilePictureBase64);
 
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject);

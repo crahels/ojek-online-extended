@@ -14,7 +14,7 @@ public class ValidateTokenWSImpl implements ValidateTokenWS {
      * @return JSON response.
      */
     @Override
-    public String validateToken(String access_token) {
+    public String validateToken(String access_token, String identifier) {
         JSONObject result = new JSONObject();
         Statement statement = null;
         boolean valid = false;
@@ -46,6 +46,12 @@ public class ValidateTokenWSImpl implements ValidateTokenWS {
                 //
             }
         }
+
+        // identifier check
+        if (valid && !AuthManager.extractIdentifier(access_token).equals(identifier)) {
+            valid = false;
+        }
+
         //JSONObject result = new JSONObject();
         if (valid) {
             if (expired) {

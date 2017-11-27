@@ -166,6 +166,136 @@
     width: 570px;
 }
 
+#containerchat {
+    width: 100%;
+    height: 300px;
+    margin-top: 10px;
+    border: 1px solid black;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.containerinput {
+    margin-top: -1px;
+    width: 100%;
+    height: 50px;
+    border: 1px solid black;
+}
+
+.chatsender {
+    white-space: initial; 
+    width: 250px; 
+    margin-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 7px;
+    background: #7EA9FC;
+    float: right;
+}
+
+.chatreceiver {
+    white-space: initial; 
+    width: 250px;  
+    margin-left: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 7px;
+    background: #EBEBEB;
+}
+
+.chat {
+    white-space: initial; 
+    width: 100%;
+    display: inline-block;
+}
+
+.inpconv {
+    margin-top: 10px;
+    margin-left: 20px;
+    background: #FFFFFF;
+    border: none;
+    height: 30px;
+    width: 70%;
+    float: left;
+    position: relative;
+}
+
+.sendbutton {
+    margin-top: 10px;
+    margin-right: 20px;
+    background: green;
+    border: 1px solid black;
+    border-radius: 7px;
+    height: 30px;
+    width: 20%;
+    float: right;
+    position: relative;
+    color: black;
+    cursor: pointer;
+}
+
+.closebutton {
+    margin-left: 35%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background: red;
+    border: 1px solid black;
+    border-radius: 7px;
+    height: 50px;
+    width: 30%;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+}
+
+.find-order-button {
+    margin-left: 35%;
+    margin-top: 30%;
+    margin-bottom: 20px;
+    background: green;
+    border: 1px solid black;
+    border-radius: 7px;
+    height: 50px;
+    width: 30%;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+}
+
+.finding-order {
+    margin-top: 30%;
+    margin-bottom: 20px;
+    height: 50px;
+    text-align: center;
+    font-size: 25px;
+    font-family: Sans-serif;
+}
+
+.cancel-order-button {
+    margin-left: 35%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background: red;
+    border: 1px solid black;
+    border-radius: 7px;
+    height: 50px;
+    width: 30%;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+}
+
+.header-driver {
+    font-size: 25px;
+    text-align: center;
+    font-family: Sans-serif;
+    color: #44C04F;
+}
+
 h2 {
     font-weight: normal;
     font-family: 'bebas';
@@ -245,7 +375,7 @@ h2 {
 
 .button-back {
     max-width: auto;
-    width: 85px;
+    width: 85closepx;
     height: 1.6em;
     border: 2px solid black;
     border-radius: 7px;
@@ -544,6 +674,14 @@ h1 {
     margin-top: 0;
     margin-bottom: 0;
     text-align: right;
+}
+
+.username-order {
+    color: #333333;
+    font-family: Sans-Serif;
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center;
 }
 
 .username {

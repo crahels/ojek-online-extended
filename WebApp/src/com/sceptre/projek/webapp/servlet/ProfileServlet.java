@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet(name = "ProfileServlet", urlPatterns = {"/profile"})
@@ -19,7 +20,7 @@ public class ProfileServlet extends HttpServlet {
         if (request.getSession().getAttribute("access_token") != null) {
             UserWS userWS = WSClient.getUserWS();
             if (userWS != null) {
-                String JSONResponse = userWS.getUserDetails((String) request.getSession().getAttribute("access_token"));
+                String JSONResponse = userWS.getUserDetails((String) request.getSession().getAttribute("access_token"), TokenValidator.getIdentifier(request));
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject);
                 if (authResult == WSClient.AUTH_RETRY) {
@@ -27,6 +28,8 @@ public class ProfileServlet extends HttpServlet {
                 } else if (authResult == WSClient.AUTH_OK) {
                     User user = new User(jsonObject);
                     request.setAttribute("user", user);
+                    HttpSession session = request.getSession();
+                    session.setAttribute("is_driver", user.isDriver());
                     RequestDispatcher rs = request.getRequestDispatcher("/WEB-INF/view/profile.jsp");
                     rs.forward(request, response);
                 }

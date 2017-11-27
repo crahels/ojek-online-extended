@@ -8,7 +8,6 @@ import javax.jws.soap.SOAPBinding;
 @WebService
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 public interface LocationWS {
-
     /**
      * Add a preferred location for the current user.
      *
@@ -17,7 +16,7 @@ public interface LocationWS {
      * @return JSON containing message.
      */
     @WebMethod
-    String addPreferredLocation(String access_token, String loc_name);
+    String addPreferredLocation(String access_token, String identifier, String loc_name);
 
     /**
      * Edit a preferred location for the current user.
@@ -28,7 +27,7 @@ public interface LocationWS {
      * @return JSON containing message.
      */
     @WebMethod
-    String editPreferredLocation(String access_token, String loc_name, String new_loc_name);
+    String editPreferredLocation(String access_token, String identifier, String loc_name, String new_loc_name);
 
     /**
      * Delete a preferred location for the current user.
@@ -38,6 +37,6 @@ public interface LocationWS {
      * @return JSON containing message.
      */
     @WebMethod
-    String deletePreferredLocation(String access_token, String loc_name);
+    String deletePreferredLocation(String access_token, String identifier, String loc_name);
 }
 

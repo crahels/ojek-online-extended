@@ -28,8 +28,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `session` (
   `username` varchar(255) NOT NULL,
-  `refresh_token` varchar(255) NOT NULL,
-  `access_token` varchar(255) NOT NULL,
+  `refresh_token` varchar(4096) NOT NULL,
+  `access_token` varchar(4096) NOT NULL,
   `expiry_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

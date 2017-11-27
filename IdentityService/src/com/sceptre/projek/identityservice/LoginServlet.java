@@ -28,11 +28,12 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String identifier = request.getParameter("identifier");
 
         try {
             JSONObject json;
             if (AuthManager.isCredentialValid(username, password)) {
-                json = AuthManager.startSession(username);
+                json = AuthManager.startSession(username, identifier);
                 Utils.sendJsonResponse(response, json);
             } else {
                 json = new JSONObject();

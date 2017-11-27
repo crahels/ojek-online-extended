@@ -19,14 +19,15 @@ public interface UserWS {
      * @param isDriver Driver status.
      * @return JSONResponse.
      */
-    @WebMethod String store(String access_token, String name, String username, String email, String phoneNumber, boolean isDriver);
+    @WebMethod String store(String access_token, String identifier, String name, String username, String email, String phoneNumber, boolean isDriver);
 
     /**
      * Gets the user details (profile and preferred locations if driver) based on the given access token.
      * @param access_token Access token for authentication.
      * @return User details in JSON format.
      */
-    @WebMethod String getUserDetails(String access_token);
+    @WebMethod String getUserDetails(String access_token, String identifier);
 
-    @WebMethod String update(String access_token, String name, String phoneNumber, boolean isDriver, String profilePictureBase64);
+    // Update user in DB
+    @WebMethod String update(String access_token, String identifier, String name, String phoneNumber, boolean isDriver, String profilePicture);
 }

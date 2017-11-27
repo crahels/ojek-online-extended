@@ -25,7 +25,7 @@ public class CompleteOrderServlet extends HttpServlet {
                 String destination = request.getParameter("destination");
                 int rating = Integer.parseInt(request.getParameter("star"));
                 String comment = request.getParameter("comment");
-                String JSONResponse = orderWS.completeOrder(access_token, driverId, pickingPoint, destination, rating, comment);
+                String JSONResponse = orderWS.completeOrder(access_token, TokenValidator.getIdentifier(request), driverId, pickingPoint, destination, rating, comment);
 
                 int authResult = WSClient.checkAuth(request.getSession(), response, new JSONObject(JSONResponse));
                 if (authResult == WSClient.AUTH_RETRY) {
@@ -45,7 +45,7 @@ public class CompleteOrderServlet extends HttpServlet {
             if (orderWS != null) {
                 String access_token = (String) request.getSession().getAttribute("access_token");
                 int driverId = Integer.parseInt(request.getParameter("driver_id"));
-                String JSONResponse = orderWS.getDriver(access_token, driverId);
+                String JSONResponse = orderWS.getDriver(access_token, TokenValidator.getIdentifier(request), driverId);
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject);
                 if (authResult == WSClient.AUTH_RETRY) {

@@ -29,6 +29,14 @@ winston.log('verbose', 'Setting up Express middleware...');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  next();
+});
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
@@ -38,15 +46,17 @@ app.use(methodOverride('_method'));
 winston.log('verbose', 'Loading and applying routes...');
 
 const routeDirectory = global.appDirectory;
-listFiles(routeDirectory).filter(file => file.endsWith('.routes.js')).forEach((file) => {
-  const routerPath = path.join(routeDirectory, file);
-  const router = require(routerPath);
-  if (!router.baseRoute) router.baseRoute = '/';
-  const completeRoute = config.get('routePrefix') + router.baseRoute;
+listFiles(routeDirectory)
+  .filter(file => file.endsWith('.routes.js'))
+  .forEach(file => {
+    const routerPath = path.join(routeDirectory, file);
+    const router = require(routerPath);
+    if (!router.baseRoute) router.baseRoute = '/';
+    const completeRoute = config.get('routePrefix') + router.baseRoute;
 
-  winston.log('verbose', 'Using route file %s...', file);
-  app.use(completeRoute, router);
-});
+    winston.log('verbose', 'Using route file %s...', file);
+    app.use(completeRoute, router);
+  });
 
 /* Apply Express error handler */
 

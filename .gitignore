@@ -1,9 +1,1 @@
-IdentityService/.idea/**
-IdentityService/IdentityService.iml
-WebApp/.idea/**
-WebApp/WebApp.iml
-WebService/.idea/**
-WebService/WebService.iml
-
-*.xml
-*.DS_STORE
+.DS_Store

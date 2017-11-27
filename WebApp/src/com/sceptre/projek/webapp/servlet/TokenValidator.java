@@ -1,4 +1,4 @@
-package com.sceptre.projek.webservice;
+package com.sceptre.projek.webapp.servlet;
 
 import org.json.JSONObject;
 

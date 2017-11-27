@@ -10,11 +10,14 @@ services:
     environment:
       - NODE_ENV=production
       - CHAT_SERVICE_MONGODB_CONNECTION_STRING=mongodb://mongodb_chatservice/chatservice
+      - IDENTITY_SERVICE_URL=http://glassfish_identityservice:8080
     volumes:
       - ./ChatService:/opt/ChatService
       - /opt/ChatService/node_modules
     depends_on:
       - mongodb_chatservice
+      - glassfish_identityservice
+      - glassfish_webservice
 
   mongodb_chatservice:
     image: mongo:latest
@@ -34,6 +37,10 @@ services:
       - 48480:4848
     volumes:
       - ./WebApp/out/docker:/WebApp
+    depends_on:
+      - node_chatservice
+      - glassfish_identityservice
+      - glassfish_webservice
 
   glassfish_identityservice:
     image: oracle/glassfish:5.0
@@ -47,6 +54,8 @@ services:
       - 48481:4848
     volumes:
       - ./IdentityService/out/docker:/IdentityService
+    depends_on:
+      - mysql_identityservice
 
   glassfish_webservice:
     image: oracle/glassfish:5.0
@@ -61,6 +70,9 @@ services:
       - 48482:4848
     volumes:
       - ./WebService/out/docker:/WebService
+    depends_on:
+      - glassfish_identityservice
+      - mysql_webservice
 
   mysql_identityservice:
     image: mysql
@@ -87,16 +99,21 @@ services:
   phpmyadmin_identityservice:
     image: phpmyadmin/phpmyadmin
     environment:
-     - PMA_HOST=mysql_identityservice
+      - PMA_HOST=mysql_identityservice
     ports:
-     - 12341:80
+      - 12341:80
+    depends_on:
+      - mysql_identityservice
 
   phpmyadmin_webservice:
     image: phpmyadmin/phpmyadmin
     environment:
-     - PMA_HOST=mysql_webservice
+      - PMA_HOST=mysql_webservice
     ports:
-     - 12342:80
+      - 12342:80
+    depends_on:
+      - mysql_webservice
+
 
 volumes:
   mysql_identityservice_data:
