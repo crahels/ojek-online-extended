@@ -45,6 +45,7 @@ public class SignUpServlet extends HttpServlet {
         body.put("username", username);
         body.put("email", email);
         body.put("password", password);
+        body.put("identifier", TokenValidator.getIdentifier(request));
 
         String responseString;
         try {

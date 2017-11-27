@@ -170,7 +170,7 @@
                             return Object.assign({}, value, { profile_picture : $scope.prefdriver.find(function(val) {
                                 // console.log(' pref : ' + JSON.stringify(val));
                                 return value.username === val.username;
-                            }).profile_picture });
+                            }).profile_picture || '/assets/images/profile/default.png' });
                         });
 
                         $scope.countarrpreferred = response.data.preferred_driver.length;
@@ -179,7 +179,7 @@
                             return Object.assign({}, value, { profile_picture : $scope.othdriver.find(function(val) {
                                 // console.log(' other : ' + JSON.stringify(val) + ' : ' + JSON.stringify(value));
                                 return value.username === val.username;
-                            }).profile_picture });
+                            }).profile_picture || '/assets/images/profile/default.png' });
                         });
 
                         $scope.countarrother = response.data.other_drivers.length;
@@ -210,7 +210,8 @@
 
             $scope.nextLoad = function() {
                 $scope.cancelNextLoad();
-                $scope.loadPromise = $timeout($scope.getDriver(),$scope.loadTime);
+                console.log('nextload');
+                $scope.loadPromise = $timeout($scope.getDriver, $scope.loadTime);
             }
 
             $scope.$on('$destroy', function() {

@@ -237,12 +237,12 @@
 
         $scope.nextLoad = function() {
             $scope.cancelNextLoad();
-            $scope.loadPromise = $timeout($scope.checkOrder(),$scope.loadTime);
+            $scope.loadPromise = $timeout($scope.checkOrder, $scope.loadTime);
         }
 
         $scope.nextLoadEndOrder = function() {
             $scope.cancelNextLoadEndOrder();
-            $scope.loadPromiseEndOrder = $timeout($scope.checkEndOrder(),$scope.loadTime);
+            $scope.loadPromiseEndOrder = $timeout($scope.checkEndOrder, $scope.loadTime);
         };
 
         $scope.$on('$destroy', function() {
