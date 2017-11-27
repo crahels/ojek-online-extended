@@ -122,7 +122,7 @@
             if ($scope.conv !== null && $scope.conv !== "") {
                 $http.post($scope.savechat, {username: $scope.from, from: $scope.from, to: $scope.to, message: $scope.conv, token: $scope.token})
                     .then(function(response) {
-                        console.log(response.data);
+                        // console.log(response.data);
                         $scope.chathistory.push(response.data);
                         document.getElementById("conv").value = "";
                     }, function(response) {
@@ -157,7 +157,7 @@
         $scope.findOrder = function() {
             $http.post($scope.findorderurl, {token: $scope.token, username: $scope.from})
                 .then(function(response) {
-                    console.log(response.data);
+                    // console.log(response.data);
                     $scope.cancelorder = 0;
                     $scope.findorder = 0;
                     $scope.findingorder = 1;
@@ -169,7 +169,7 @@
         $scope.cancelFindOrder = function() {
             $http.post($scope.cancelfindorderurl, {token: $scope.token, username: $scope.from})
                 .then(function(response) {
-                    console.log(response.data);
+                    // console.log(response.data);
                     if (!$scope.checkordersuccess) {
                         $scope.cancelorder = 1;
                         $scope.findingorder = 0;

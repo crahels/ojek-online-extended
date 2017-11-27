@@ -112,7 +112,7 @@
                 if ($scope.conv !== null && $scope.conv !== "") {
                     $http.post($scope.savechat, { username: $scope.from, from: $scope.from, to: $scope.to, message: $scope.conv, token: $scope.token })
                     .then(function(response) {
-                        console.log(response.data);
+                        // console.log(response.data);
                         $scope.chathistory.push(response.data);
                         document.getElementById("conv").value = "";
                     }, function(response) {

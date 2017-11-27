@@ -47,7 +47,7 @@
                     <table class="table-select-driver">
                         <tr>
                             <td>
-                                <img class="img-driver-pic" ng-src="{{driver.profilepicture}}" alt="DRIVER PICTURE">
+                                <img class="img-driver-pic" ng-src="{{driver.profile_picture}}" alt="DRIVER PICTURE">
                             </td>
                             <td>
                                 <p class="driver-name"> {{driver.name}} </p>
@@ -77,17 +77,17 @@
                     <table class="table-select-driver">
                         <tr>
                             <td>
-                                <img class="img-driver-pic" ng-src="{{driver.profilepicture}}" alt="DRIVER PICTURE">
+                                <img class="img-driver-pic" ng-src="{{driver.profile_picture}}" alt="DRIVER PICTURE" />
                             </td>
                             <td>
                                 <p class="driver-name"> {{driver.name}} </p>
-                                <p class="star"><span class="orange">&#10025; {{driver.ratings}} </span> (driver.votes
-                                    <div ng-if="driver.votes > 1">
+                                <p class="star"><span class="orange">&#10025; {{driver.ratings}} </span> ({{driver.votes}}
+                                    <span ng-if="driver.votes > 1">
                                         votes)
-                                    </div>
-                                    <div ng-if="driver.votes <= 1">
+                                    </span>
+                                    <span ng-if="driver.votes <= 1">
                                         vote)
-                                    </div>
+                                    </span>
                                 </p>
                                 <a ng-click="startOrder(driver.username, driver.id)"> <input class="button-i-choose-you right" type="button" value="I CHOOSE YOU!!"> </a>
                             </td>
@@ -152,12 +152,46 @@
             $scope.updatetokenurl = 'http://localhost:8003/api/updatetoken';
 
             $scope.getDriver = function() {
-                $http.post($scope.driverurl, {username: $scope.username, token: $scope.token, other_drivers: $scope.othdriver, preferred_driver: $scope.prefdriver})
+                var prefdriverpost = $scope.prefdriver.map(function(value) {
+                    return {
+                        name: value.name,
+                        id: value.id,
+                        votes: value.votes,
+                        ratings: value.ratings,
+                        username: value.username
+                    };
+                });
+
+                var otherdriverpost = $scope.othdriver.map(function(value) {
+                    return {
+                        name: value.name,
+                        id: value.id,
+                        votes: value.votes,
+                        ratings: value.ratings,
+                        username: value.username
+                    };
+                });
+
+                $http.post($scope.driverurl, {username: $scope.username, token: $scope.token, other_drivers: otherdriverpost, preferred_driver: prefdriverpost})
                     .then(function(response) {
-                        $scope.arrPreferredDriver = response.data.preferred_driver;
+                        $scope.arrPreferredDriver = response.data.preferred_driver.map(function(value) {
+                            return Object.assign({}, value, { profile_picture : $scope.prefdriver.find(function(val) {
+                                // console.log(' pref : ' + JSON.stringify(val));
+                                return value.username === val.username;
+                            }).profile_picture });
+                        });
+
                         $scope.countarrpreferred = response.data.preferred_driver.length;
-                        $scope.arrOtherDriver = response.data.other_drivers;
+
+                        $scope.arrOtherDriver = response.data.other_drivers.map(function(value) {
+                            return Object.assign({}, value, { profile_picture : $scope.othdriver.find(function(val) {
+                                // console.log(' other : ' + JSON.stringify(val) + ' : ' + JSON.stringify(value));
+                                return value.username === val.username;
+                            }).profile_picture });
+                        });
+
                         $scope.countarrother = response.data.other_drivers.length;
+
                         $scope.nextLoad();
                     }, function(response) {
                         console.log("unable to perform post request");
