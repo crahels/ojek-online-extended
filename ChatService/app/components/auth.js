@@ -4,6 +4,17 @@ const errors = require('http-errors');
 const User = require('../users/user.schema.js');
 const fetch = require('node-fetch');
 
+function getIdentifier(req) {
+  let ip = req.connection.remoteAddress;
+  if (!ip) ip = '';
+  ip = ip.replace(/^.*:/, ''); // remove leading :ffff due to ipv6 compatibility, to be compatible with java
+  let ua = req.headers['user-agent']; // lowercase
+  if (!ua) ua = '';
+  let identifier = ip + "###" + ua;
+  console.log(identifier);
+  return identifier;
+}
+
 module.exports = {
   /**
    * Middleware that checks whether the user is authenticated.
@@ -26,7 +37,7 @@ module.exports = {
       );
     }
 
-    const param = { username, token };
+    const param = { username, token, identifier: getIdentifier(req) };
     const formBody = Object.keys(param)
       .map(
         key => encodeURIComponent(key) + '=' + encodeURIComponent(param[key])

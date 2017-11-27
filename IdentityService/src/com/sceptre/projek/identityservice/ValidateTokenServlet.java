@@ -70,7 +70,7 @@ public class ValidateTokenServlet extends HttpServlet {
                     result.put("username", username);
                 }
             } else {
-                result.put("message", "invalid_token " + token);
+                result.put("message", "invalid_token");
             }
             Utils.sendJsonResponse(response, result);
         } catch (Exception e) {
