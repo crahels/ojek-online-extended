@@ -1,6 +1,6 @@
 FROM node:boron-alpine
 
-RUN apk add --no-cache make gcc g++ python
+RUN apk add --no-cache make gcc g++ python libc6-compat
 
 # Create app directory and set as working directory
 RUN mkdir -p /opt/ChatService
