@@ -22,6 +22,7 @@ public class ValidateTokenServlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String token = request.getParameter("token");
+        String identifier = request.getParameter("identifier");
         try {
             JSONObject result = new JSONObject();
             Statement statement = null;
@@ -54,6 +55,12 @@ public class ValidateTokenServlet extends HttpServlet {
                     //
                 }
             }
+
+            // identifier check
+            if (valid && !AuthManager.extractIdentifier(token).equals(identifier)) {
+                valid = false;
+            }
+
             //JSONObject result = new JSONObject();
             if (valid) {
                 if (expired) {

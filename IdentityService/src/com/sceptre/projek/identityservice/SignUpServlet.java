@@ -21,12 +21,13 @@ public class SignUpServlet extends HttpServlet {
         String email = request.getParameter("email");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String identifier = request.getParameter("identifier");
 
         try {
             JSONObject json;
             if (AuthManager.isEmailAndUsernameValid(email, username)) {
                 AuthManager.register(email, username, password);
-                json = AuthManager.startSession(username);
+                json = AuthManager.startSession(username, identifier);
                 Utils.sendJsonResponse(response, json);
             } else {
                 json = new JSONObject();

@@ -32,6 +32,7 @@ public class LoginServlet extends javax.servlet.http.HttpServlet {
         Map<String, String> body = new LinkedHashMap<>();
         body.put("username", request.getParameter("username"));
         body.put("password", request.getParameter("password"));
+        body.put("identifier", TokenValidator.getIdentifier(request));
 
         String responseString;
         try {

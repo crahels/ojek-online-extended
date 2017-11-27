@@ -13,22 +13,23 @@ import java.util.ArrayList;
 public class UserWSImpl implements UserWS {
     /**
      * Store the given user in DB.
+     *
      * @param access_token Access token for authentication.
-     * @param name Name of the user.
-     * @param username Username of the user.
-     * @param email Email of the user.
-     * @param phoneNumber Phone number of the user.
-     * @param isDriver Driver status.
+     * @param name         Name of the user.
+     * @param username     Username of the user.
+     * @param email        Email of the user.
+     * @param phoneNumber  Phone number of the user.
+     * @param isDriver     Driver status.
      * @return JSONResponse.
      */
     @Override
-    public String store(String access_token, String name, String username, String email, String phoneNumber, boolean isDriver) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String store(String access_token, String identifier, String name, String username, String email, String phoneNumber, boolean isDriver) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
             Statement statement = null;
-            try{
+            try {
                 conn = DatabaseManager.createConnection();
                 statement = conn.createStatement();
 
@@ -39,18 +40,18 @@ public class UserWSImpl implements UserWS {
                 statement.execute(query);
                 statement.close();
                 conn.close();
-            } catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-            }finally{
-                try{
-                    if(statement!=null)
+            } finally {
+                try {
+                    if (statement != null)
                         statement.close();
-                }catch(SQLException ignored){
+                } catch (SQLException ignored) {
                 }
-                try{
-                    if(conn!=null)
+                try {
+                    if (conn != null)
                         conn.close();
-                }catch(SQLException se){
+                } catch (SQLException se) {
                     se.printStackTrace();
                 }
             }
@@ -65,17 +66,18 @@ public class UserWSImpl implements UserWS {
 
     /**
      * Gets the user details (profile and preferred locations if driver) based on the given access token.
+     *
      * @param access_token Access token for authentication.
      * @return User details in JSON format.
      */
-    public String getUserDetails(String access_token) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String getUserDetails(String access_token, String identifier) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
             Statement statement = null;
             String username = validator.getUsername();
-            try{
+            try {
                 conn = DatabaseManager.createConnection();
                 statement = conn.createStatement();
 
@@ -110,18 +112,18 @@ public class UserWSImpl implements UserWS {
                 }
                 statement.close();
                 conn.close();
-            } catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-            }finally{
-                try{
-                    if(statement!=null)
+            } finally {
+                try {
+                    if (statement != null)
                         statement.close();
-                }catch(SQLException ignored){
+                } catch (SQLException ignored) {
                 }
-                try{
-                    if(conn!=null)
+                try {
+                    if (conn != null)
                         conn.close();
-                }catch(SQLException se){
+                } catch (SQLException se) {
                     se.printStackTrace();
                 }
             }
@@ -135,13 +137,13 @@ public class UserWSImpl implements UserWS {
     }
 
     // Update user in DB
-    public String update(String access_token, String name, String phoneNumber, boolean isDriver, String profilePicture) {
-        TokenValidator validator = new TokenValidator(access_token);
+    public String update(String access_token, String identifier, String name, String phoneNumber, boolean isDriver, String profilePicture) {
+        TokenValidator validator = new TokenValidator(access_token, identifier);
         JSONObject JSONResponse = new JSONObject();
         if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
             Connection conn = null;
             Statement statement = null;
-            try{
+            try {
                 conn = DatabaseManager.createConnection();
                 statement = conn.createStatement();
 
@@ -156,18 +158,18 @@ public class UserWSImpl implements UserWS {
                 statement.execute(query);
                 statement.close();
                 conn.close();
-            } catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-            }finally{
-                try{
-                    if(statement!=null)
+            } finally {
+                try {
+                    if (statement != null)
                         statement.close();
-                }catch(SQLException ignored){
+                } catch (SQLException ignored) {
                 }
-                try{
-                    if(conn!=null)
+                try {
+                    if (conn != null)
                         conn.close();
-                }catch(SQLException se){
+                } catch (SQLException se) {
                     se.printStackTrace();
                 }
             }

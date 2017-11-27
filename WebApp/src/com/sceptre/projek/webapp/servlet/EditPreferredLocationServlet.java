@@ -21,7 +21,7 @@ public class EditPreferredLocationServlet extends HttpServlet {
         if (request.getSession().getAttribute("access_token") != null) {
             UserWS userWS = WSClient.getUserWS();
             if (userWS != null) {
-                String JSONResponse = userWS.getUserDetails((String) request.getSession().getAttribute("access_token"));
+                String JSONResponse = userWS.getUserDetails((String) request.getSession().getAttribute("access_token"), TokenValidator.getIdentifier(request));
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject);
                 if (authResult == WSClient.AUTH_RETRY) {
@@ -44,7 +44,7 @@ public class EditPreferredLocationServlet extends HttpServlet {
             if (locationWS != null) {
                 String access_token = (String) request.getSession().getAttribute("access_token");
                 String loc_name = request.getParameter("loc_name");
-                String JSONResponse = locationWS.addPreferredLocation(access_token, loc_name);
+                String JSONResponse = locationWS.addPreferredLocation(access_token, TokenValidator.getIdentifier(request), loc_name);
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject);
                 if (authResult == WSClient.AUTH_RETRY) {
@@ -65,7 +65,7 @@ public class EditPreferredLocationServlet extends HttpServlet {
                 String access_token = (String) request.getSession().getAttribute("access_token");
                 String loc_name = request.getParameter("loc_name");
                 String new_loc_name = request.getParameter("new_loc_name");
-                String JSONResponse = locationWS.editPreferredLocation(access_token, loc_name, new_loc_name);
+                String JSONResponse = locationWS.editPreferredLocation(access_token, TokenValidator.getIdentifier(request), loc_name, new_loc_name);
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject, true);
                 if (authResult == WSClient.AUTH_RETRY) {
@@ -86,7 +86,7 @@ public class EditPreferredLocationServlet extends HttpServlet {
                 String access_token = (String) request.getSession().getAttribute("access_token");
                 String loc_name = request.getParameter("loc_name");
                 
-                String JSONResponse = locationWS.deletePreferredLocation(access_token, loc_name);
+                String JSONResponse = locationWS.deletePreferredLocation(access_token, TokenValidator.getIdentifier(request), loc_name);
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject, true);
                 if (authResult == WSClient.AUTH_RETRY) {

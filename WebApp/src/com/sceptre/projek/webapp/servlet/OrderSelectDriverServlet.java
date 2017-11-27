@@ -24,7 +24,7 @@ public class OrderSelectDriverServlet extends HttpServlet {
                 String pickingPoint = request.getParameter("picking_point");
                 String destination = request.getParameter("destination");
                 String preferredDriver = request.getParameter("preferred_driver");
-                String JSONResponse = orderWS.getDrivers(access_token, pickingPoint, destination, preferredDriver);
+                String JSONResponse = orderWS.getDrivers(access_token, TokenValidator.getIdentifier(request), pickingPoint, destination, preferredDriver);
                 JSONObject jsonObject = new JSONObject(JSONResponse);
                 int authResult = WSClient.checkAuth(request.getSession(), response, jsonObject);
                 if (authResult == WSClient.AUTH_RETRY) {

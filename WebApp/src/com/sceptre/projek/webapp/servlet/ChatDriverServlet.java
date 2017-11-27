@@ -20,7 +20,7 @@ public class ChatDriverServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getSession().getAttribute("access_token") != null) {
             String access_token = (String) request.getSession().getAttribute("access_token");
-            TokenValidator validator = new TokenValidator(access_token);
+            TokenValidator validator = new TokenValidator(access_token, TokenValidator.getIdentifier(request));
             JSONObject JSONResponse = new JSONObject();
             if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
                 JSONResponse.put("message", "Success");
@@ -46,7 +46,7 @@ public class ChatDriverServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getSession().getAttribute("access_token") != null) {
             String access_token = (String) request.getSession().getAttribute("access_token");
-            TokenValidator validator = new TokenValidator(access_token);
+            TokenValidator validator = new TokenValidator(access_token, TokenValidator.getIdentifier(request));
             JSONObject JSONResponse = new JSONObject();
             if (validator.getTokenStatus() == TokenValidator.TOKEN_VALID) {
                 JSONResponse.put("message", "Success");

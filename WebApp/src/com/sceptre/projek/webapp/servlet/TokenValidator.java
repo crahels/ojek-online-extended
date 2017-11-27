@@ -2,6 +2,7 @@ package com.sceptre.projek.webapp.servlet;
 
 import org.json.JSONObject;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import java.net.MalformedURLException;
@@ -21,12 +22,20 @@ public class TokenValidator {
         return url + endpoint;
     }
 
+    public static String getIdentifier(HttpServletRequest request) {
+        String ip = request.getRemoteAddr();
+        if (ip == null) ip = "";
+        String ua = request.getHeader("User-Agent");
+        if (ua == null) ua = "";
+        return ip + "###" + ua;
+    }
+
     /**
      * Validates the given access token using IdentityService and saves the status.
      *
      * @param access_token Access token to be validated.
      */
-    public TokenValidator(String access_token) {
+    public TokenValidator(String access_token, String identifier) {
         username = null;
         tokenStatus = TOKEN_INVALID;
         try {
@@ -40,7 +49,7 @@ public class TokenValidator {
 
             ValidateTokenWS validateTokenWS = service.getPort(qname2, ValidateTokenWS.class);
 
-            String JSONResult = validateTokenWS.validateToken(access_token);
+            String JSONResult = validateTokenWS.validateToken(access_token, identifier);
             JSONObject jsonObject = new JSONObject(JSONResult);
             String message = jsonObject.getString("message");
             switch (message) {

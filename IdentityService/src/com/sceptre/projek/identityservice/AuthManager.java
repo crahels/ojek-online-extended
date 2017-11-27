@@ -18,12 +18,21 @@ class AuthManager {
      */
     private static int EXPIRY_TIME = 60 * 60 * 1000;
 
+    static String extractIdentifier(String token) {
+        String[] sp = token.split("~~~");
+        if (sp.length >= 2) {
+            return sp[1];
+        } else {
+            return "";
+        }
+    }
+
     /**
      * Generates a random access token.
      *
      * @return Generated access token in Base64.
      */
-    private static String generateToken() throws NoSuchAlgorithmException {
+    private static String generateToken(String identifier) throws NoSuchAlgorithmException {
         MessageDigest messageDigest;
         SecureRandom prng = SecureRandom.getInstance("SHA1PRNG");
         String randomNum = Integer.toString(prng.nextInt());
@@ -32,7 +41,7 @@ class AuthManager {
         messageDigest.update(randomNum.getBytes());
         byte[] messageDigestResult = messageDigest.digest();
 
-        return Base64.getEncoder().encodeToString(messageDigestResult);
+        return Base64.getEncoder().encodeToString(messageDigestResult) + "~~~" + identifier;
     }
 
     /**
@@ -41,9 +50,9 @@ class AuthManager {
      * @param username Username whose access token to be generated.
      * @return JSON containing access token and expiry time.
      */
-    static JSONObject startSession(String username) throws NoSuchAlgorithmException, SQLException, ClassNotFoundException {
-        String refreshToken = generateToken();
-        String accessToken = generateToken();
+    static JSONObject startSession(String username, String identifier) throws NoSuchAlgorithmException, SQLException, ClassNotFoundException {
+        String refreshToken = generateToken(identifier);
+        String accessToken = generateToken(identifier);
         Timestamp expiryTime = new Timestamp(System.currentTimeMillis() + EXPIRY_TIME);
 
         Statement statement = null;
@@ -99,7 +108,7 @@ class AuthManager {
      * @return JSON containing new access token and expiry time.
      */
     static JSONObject regenerateAccessToken(String refreshToken) throws ClassNotFoundException, SQLException, NoSuchAlgorithmException {
-        String accessToken = generateToken();
+        String accessToken = generateToken(extractIdentifier(refreshToken));
         Timestamp expiryTime = new Timestamp(System.currentTimeMillis() + EXPIRY_TIME);
 
         Statement statement = null;

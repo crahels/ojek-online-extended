@@ -54,7 +54,7 @@ public class SignUpServlet extends HttpServlet {
             String access_token = jsonObject.getString("access_token");
             Timestamp expiry_time = Timestamp.valueOf(jsonObject.getString("expiry_time"));
 
-            signUp(access_token, name, username, email, phoneNumber, isDriver);
+            signUp(access_token, TokenValidator.getIdentifier(request), name, username, email, phoneNumber, isDriver);
 
             HttpSession session = request.getSession();
             session.setAttribute("access_token", access_token);
@@ -94,10 +94,10 @@ public class SignUpServlet extends HttpServlet {
      * @param phoneNumber  Phone number of the user.
      * @param isDriver     Driver status.
      */
-    private void signUp(String access_token, String name, String username, String email, String phoneNumber, boolean isDriver) {
+    private void signUp(String access_token, String identifier, String name, String username, String email, String phoneNumber, boolean isDriver) {
         UserWS userWS = WSClient.getUserWS();
         if (userWS != null) {
-            userWS.store(access_token, name, username, email, phoneNumber, isDriver);
+            userWS.store(access_token, identifier, name, username, email, phoneNumber, isDriver);
         }
     }
 }
