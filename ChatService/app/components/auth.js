@@ -52,7 +52,7 @@ module.exports = {
             username: req.body.username,
             tokenFCM: req.body.tokenFCM,
             online: true,
-            ordererdBy: null,
+            orderedBy: null,
             history: [],
             last_login: new Date()
           });
