@@ -17,9 +17,12 @@ import java.util.Map;
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends javax.servlet.http.HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getSession().getAttribute("access_token") != null) {
+        Boolean redirectedToLogin = (Boolean) request.getSession().getAttribute("redirectedToLogin");
+        if (redirectedToLogin == null) redirectedToLogin = false;
+        if (request.getSession().getAttribute("access_token") != null && !redirectedToLogin) {
             response.sendRedirect("profile");
         } else {
+            request.getSession().removeAttribute("redirectedToLogin");
             RequestDispatcher rs = request.getRequestDispatcher("/WEB-INF/view/login.jsp");
             rs.forward(request, response);
         }

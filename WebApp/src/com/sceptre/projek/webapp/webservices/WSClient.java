@@ -87,6 +87,7 @@ public class WSClient {
             if (ajax) {
                 response.sendError(401, "Access token invalid");
             } else {
+                session.setAttribute("redirectedToLogin", true);
                 response.sendRedirect("login");
             }
             return AUTH_FAILED;
@@ -96,6 +97,7 @@ public class WSClient {
                 if (ajax) {
                     response.sendError(401, "Access token expired and can't be renewed");
                 } else {
+                    session.setAttribute("redirectedToLogin", true);
                     response.sendRedirect("login");
                 }
                 return AUTH_FAILED;
